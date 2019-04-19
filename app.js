@@ -3,10 +3,10 @@ import path from 'path';
 import logger from 'morgan';
 //import cookieParser from 'cookie-parser';
 
-import api from './api'
+import api from './api';
 
 
-let app = express();
+const app = express();
 
 app.use(logger('dev'));
 //app.use(express.json());
@@ -16,4 +16,4 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', api);
 
-export default app
+export default app;
