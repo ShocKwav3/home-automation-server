@@ -1,0 +1,19 @@
+version: '2'
+services:
+  base:
+    image: home_automation_server
+    volumes:
+      - nodemodules:/usr/src/service/node_modules
+      - .:/apps/home_automation_server
+    #working_dir: /apps/home_automation_server
+  install:
+    extends:
+      service: base
+    command: yarn install
+  build:
+    extends:
+      service: base
+    command: yarn start
+volumes:
+  nodemodules:
+    external: true
