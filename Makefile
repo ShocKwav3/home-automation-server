@@ -1,6 +1,7 @@
 setup:
 	docker volume create nodemodules
-install:
-	docker-compose -f docker-compose.builder.yml run --rm install
+buildServer:
+	docker build -t home_automation_server .
+	#docker-compose -f docker-compose.builder.yml run --rm install
 dev:
 	docker-compose up
