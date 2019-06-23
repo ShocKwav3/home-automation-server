@@ -1,5 +1,6 @@
 import model from '../../models';
 import helpers from '../../helpers';
+
 const { sensor_data } = model;
 
 
@@ -8,22 +9,29 @@ const addSensorData = (req, res) => {
     sensor_device_id,
     created_timestamp,
     sensor_value,
-  } = req.body
+  } = req.body;
 
   const sensorData = {
     sensor_device_id,
     created_timestamp,
     sensor_value,
-  }
+  };
 
   return sensor_data.create(sensorData)
                     .then(sensorDataSynced =>
-                      res.status(201)
-                      .send(helpers.responseHelpers.addSuccess('Sensor data', sensorDataSynced))
+                      afterCreateSuccess(sensorDataSynced, res)
                     ).catch(error =>
                       res.status(401)
                       .send(helpers.responseHelpers.addFailure('Sensor data', error))
                     );
+};
+
+const afterCreateSuccess = (sensorDataSynced, res) => {
+  const updaterSocket = helpers.socketHelpers.connect();
+  helpers.socketHelpers.fireEvent(updaterSocket, 'newSensorData', sensorDataSynced, true);
+
+  return res.status(201)
+            .send(helpers.responseHelpers.addSuccess('Sensor data', sensorDataSynced));
 };
 
 const getAllSensorData = (req, res) => {

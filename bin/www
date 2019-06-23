@@ -5,21 +5,22 @@ import socketIO from 'socket.io';
 import debug from 'debug';
 
 import app from '../app';
+import socketServer from '../socket';
 
 const debugServer = debug('plant-monitor-server:server');
 const httpServer = http.Server(app);
 const io = socketIO(httpServer);
 const port = normalizePort(process.env.PORT || '3000');
+
 app.set('port', port);
 
 /**
- * Create Socket
+ * Socket
  */
 
-io.on('connection', function(socket){
-  console.log('an user connected');
-  socket.emit('data', {what: 'data'})
-});
+const socketConnection = new socketServer(io);
+socketConnection.connection();
+
 
 /**
  * Create HTTP server.
@@ -55,7 +56,7 @@ function normalizePort(val) {
   }
 
   return false;
-}
+};
 
 /**
  * Event listener for HTTP server "error" event.
