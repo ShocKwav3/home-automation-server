@@ -1,5 +1,6 @@
 import model from '../../models';
 import helpers from '../../helpers';
+import socket from '../../socket';
 
 const { sensor_data } = model;
 
@@ -27,8 +28,8 @@ const addSensorData = (req, res) => {
 };
 
 const afterCreateSuccess = (sensorDataSynced, res) => {
-  const updaterSocket = helpers.socketHelpers.connect();
-  helpers.socketHelpers.fireEvent(updaterSocket, 'newSensorData', sensorDataSynced, true);
+  const updaterSocket = socket.socketClient.connect();
+  socket.socketClient.fireEvent(updaterSocket, 'newSensorData', sensorDataSynced, true);
 
   return res.status(201)
             .send(helpers.responseHelpers.addSuccess('Sensor data', sensorDataSynced));

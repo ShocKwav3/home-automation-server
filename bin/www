@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 
 import http from 'http';
-import socketIO from 'socket.io';
 import debug from 'debug';
 
 import app from '../app';
-import socketServer from '../socket';
+import socket from '../socket';
 
 const debugServer = debug('plant-monitor-server:server');
 const httpServer = http.Server(app);
-const io = socketIO(httpServer);
 const port = normalizePort(process.env.PORT || '3000');
 
 app.set('port', port);
@@ -18,7 +16,7 @@ app.set('port', port);
  * Socket
  */
 
-const socketConnection = new socketServer(io);
+const socketConnection = new socket.socketServer(httpServer, port);
 socketConnection.connection();
 
 
@@ -27,7 +25,7 @@ socketConnection.connection();
  */
 
 const serverCreated = () => {
-  console.log("Server running; Socket Ready!");
+  console.log(`Server running on port ${port}`);
 };
 
 /**
