@@ -1,10 +1,10 @@
 import express from 'express';
 //import activities from './activities';
-import activitiesCollection from './activitiesCollection';
+import actuatorActivitiesCollection from './actuatorActivitiesCollection';
 const router = express.Router();
 
 
-router.use('/', activitiesCollection);
+router.use('/', actuatorActivitiesCollection);
 //router.use('/:deviceRole', activities);
 
 export default router;

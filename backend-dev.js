@@ -24,6 +24,19 @@ const compiler = webpack({
         test: path.resolve(__dirname, 'bin/www'),
         use: 'shebang-loader',
       },
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname),
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-class-properties']
+            },
+          },
+        ],
+      },
     ],
   },
   node: {

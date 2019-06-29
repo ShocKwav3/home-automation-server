@@ -1,9 +1,13 @@
-var express = require('express');
-var router = express.Router();
+import actuatorActivitiesController from './actuatiorActivitiesController';
+import devicesController from './devicesController';
+import sensorDataController from './sensorDataController';
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
 
-module.exports = router;
+const controllers = {
+  actuatorActivitiesController,
+  devicesController,
+  sensorDataController,
+};
+
+
+export default controllers;
