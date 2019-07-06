@@ -1,4 +1,4 @@
-import helpers from '../helpers';
+import helpers from 'projectRoot/helpers';
 
 
 const checkApiCache = (req, res, next) => {
@@ -6,7 +6,7 @@ const checkApiCache = (req, res, next) => {
   const key = req.url;
 
   cacheClient.on('connect', ()=>{
-    console.log('CONNECTED TO REDIS', key, typeof key);
+    console.log('CONNECTED TO REDIS');
   });
 
   res.locals.cacheClient = cacheClient;

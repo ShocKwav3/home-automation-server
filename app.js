@@ -14,8 +14,9 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(middlewares.cacheMiddlewares.checkApiCache)
+app.use(middlewares.cacheMiddlewares.checkApiCache);
 
 app.use('/', routes);
+
 
 export default app;
