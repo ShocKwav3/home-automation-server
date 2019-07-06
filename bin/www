@@ -19,7 +19,6 @@ app.set('port', port);
 const socketConnection = new socket.socketServer(httpServer, port);
 socketConnection.connection();
 
-
 /**
  * Create HTTP server.
  */
