@@ -1,7 +1,10 @@
 import model from '../../models';
 import helpers from '../../helpers';
-const { actuator_activity } = model;
+import { controllerConstants } from '../../config/constants';
 
+const { actuator_activity } = model;
+const contextName = controllerConstants.actuatorActivity.CONTEXTNAME
+const socketEventName = controllerConstants.actuatorActivity.SOCKETEVENT
 
 const addActuatorActivity = (req, res) => {
   const {
@@ -18,31 +21,34 @@ const addActuatorActivity = (req, res) => {
     sensor_device_id,
   }
 
+  const cacheClient = res.locals.cacheClient
+  const cacheKey = res.locals.cacheKey
+  const shouldFireSocketEvent = true
+
   return actuator_activity.create(actuatiorActivityData)
                           .then(actuatiorActivityDataSynced =>
-                            res.status(201)
-                            .send(helpers.responseHelpers.addSuccess('Actuator activity', actuatiorActivityDataSynced))
+                            helpers.controllerHelpers.afterCreateSuccess(res, actuatiorActivityDataSynced, contextName, cacheClient, cacheKey, shouldFireSocketEvent, socketEventName)
                           ).catch(error =>
                             res.status(401)
-                            .send(helpers.responseHelpers.addFailure('Actuator activity', error))
+                            .send(helpers.responseHelpers.addFailure(contextName, error))
                           );
 };
 
 const getAllActuatorActivities = (req, res) => {
+  const cacheClient = res.locals.cacheClient
+  const cacheKey = res.locals.cacheKey
+
   return actuator_activity.findAll()
                           .then(allActuatorActivities =>
-                            res.status(200)
-                            .send(helpers.responseHelpers.fetchSuccess('Actuator activities', allActuatorActivities))
+                            helpers.controllerHelpers.afterFetchSuccess(res, allActuatorActivities, contextName, cacheClient, cacheKey)
                           ).catch(error =>
                             res.status(400)
-                            .send(helpers.responseHelpers.fetchFailure('Actuator activities', error))
+                            .send(helpers.responseHelpers.fetchFailure(contextName, error))
                           );
 };
 
-const actuatorActivitiesController = {
+
+export default {
   addActuatorActivity,
   getAllActuatorActivities,
 };
-
-
-export default actuatorActivitiesController;
