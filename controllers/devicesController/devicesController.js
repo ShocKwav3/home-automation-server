@@ -1,6 +1,9 @@
 import model from '../../models';
 import helpers from '../../helpers';
-const { device, sensor_data, actuator_activity } = model;
+import { controllerConstants } from '../../config/constants';
+
+const { device } = model;
+const contextName = controllerConstants.device.CONTEXTNAME
 
 
 const addDevice = (req, res) => {
@@ -24,73 +27,76 @@ const addDevice = (req, res) => {
     max_value,
   }
 
+  const cacheClient = res.locals.cacheClient
+  const cacheKey = res.locals.cacheKey
+
   return device.create(deviceData)
                .then(deviceDataSynced =>
-                 res.status(201)
-                 .send(helpers.responseHelpers.addSuccess('Device', deviceDataSynced))
+                  helpers.controllerHelpers.afterCreateSuccess(res, deviceDataSynced, contextName, cacheClient, cacheKey)
                ).catch(error =>
                 res.status(401)
-                .send(helpers.responseHelpers.addFailure('Device', error))
+                .send(helpers.responseHelpers.addFailure(contextName, error))
                );
 };
 
 const getAllDevices = (req, res) => {
+  const cacheClient = res.locals.cacheClient
+  const cacheKey = res.locals.cacheKey
+
   return device.findAll()
                .then(allDevices =>
-                 res.status(200)
-                 .send(helpers.responseHelpers.fetchSuccess('Device', allDevices))
+                  helpers.controllerHelpers.afterFetchSuccess(res, allDevices, contextName, cacheClient, cacheKey)
                ).catch(error =>
                  res.status(400)
-                 .send(helpers.responseHelpers.fetchFailure('Device', error))
+                 .send(helpers.responseHelpers.fetchFailure(contextName, error))
                );
 };
 
 const updateDevice = (req, res) => {
   const deviceIdToUpdate = req.params.deviceId
+  const cacheClient = res.locals.cacheClient
+  const cacheKey = helpers.utils.constructString('remove', 'end', `/${deviceIdToUpdate}`, res.locals.cacheKey)
 
   return device.findByPk(deviceIdToUpdate)
                .then(targetDevice => {
                  targetDevice.update(req.body, { fields: Object.keys(req.body) })
                  .then(deviceDataUpdated =>
-                   res.status(200)
-                   .send(helpers.responseHelpers.updateSuccess('Device', deviceDataUpdated))
+                   helpers.controllerHelpers.afterUpdateSuccess(res, deviceDataUpdated, contextName, cacheClient, cacheKey, 'update')
                  ).catch(error =>
                    res.status(400)
-                   .send(helpers.responseHelpers.updateFailure('Device', error))
+                   .send(helpers.responseHelpers.updateFailure(contextName, error))
                  )
                })
                .catch(error =>
                  res.status(400)
-                 .send(helpers.responseHelpers.updateFailure('Device', error))
+                 .send(helpers.responseHelpers.updateFailure(contextName, error))
                );
 };
 
 const deleteDevice = (req, res) => {
-  const deviceIdToUpdate = req.params.deviceId
+  const deviceIdToDelete = req.params.deviceId
+  const cacheClient = res.locals.cacheClient
+  const cacheKey = helpers.utils.constructString('remove', 'end', `/${deviceIdToDelete}`, res.locals.cacheKey)
 
-  return device.findByPk(deviceIdToUpdate)
+  return device.findByPk(deviceIdToDelete)
                .then(targetDevice => {
                  targetDevice.destroy()
                  .then(() =>
-                   res.status(200)
-                   .send(helpers.responseHelpers.deleteSuccess('Device'))
+                   helpers.controllerHelpers.afterUpdateSuccess(res, null, contextName, cacheClient, cacheKey, 'delete')
                  ).catch(error =>
                    res.status(400)
-                   .send(helpers.responseHelpers.deleteFailure('Device', error))
+                   .send(helpers.responseHelpers.deleteFailure(contextName, error))
                  )
                })
                .catch(error =>
                  res.status(400)
-                 .send(helpers.responseHelpers.deleteFailure('Device', error))
+                 .send(helpers.responseHelpers.deleteFailure(contextName, error))
                );
 }
 
-const devicesController = {
+export default {
   addDevice,
   getAllDevices,
   updateDevice,
   deleteDevice,
 };
-
-
-export default devicesController;

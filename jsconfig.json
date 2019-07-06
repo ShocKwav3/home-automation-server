@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "projectRoot/*": ["./*"], //it's root in my case
+    }
+  },
+  "exclude": ["node_modules"]
+}

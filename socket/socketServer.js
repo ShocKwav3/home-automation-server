@@ -14,6 +14,12 @@ class socketServer {
     if(nextTask) nextTask();
   };
 
+  onNewActuatorActivity = (data, nextTask) => {
+    this.io.emit('newActuatorActivityForClient', data);
+
+    if(nextTask) nextTask();
+  }
+
   onDisconnect = () => {
     console.log('DISCONECTED');
   };
@@ -22,6 +28,8 @@ class socketServer {
     console.log("NEW SOCKET CONNECTION")
 
     socket.on('newSensorData', this.onNewSensorData);
+
+    socket.on('newActuatorActivity', this.onNewActuatorActivity);
 
     socket.on('disconnect', this.onDisconnect);
   };

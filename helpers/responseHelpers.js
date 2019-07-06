@@ -49,7 +49,7 @@ const updateFailure = (contextName, error) => {
 const deleteSuccess = (contextName) => {
   return {
     success: true,
-    message: `${contextName} successfully updated`,
+    message: `${contextName} successfully deleted`,
   }
 }
 

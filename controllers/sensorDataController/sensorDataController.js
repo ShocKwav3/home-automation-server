@@ -1,8 +1,10 @@
 import model from '../../models';
 import helpers from '../../helpers';
-import socket from '../../socket';
+import { controllerConstants } from '../../config/constants';
 
 const { sensor_data } = model;
+const contextName = controllerConstants.sensorData.CONTEXTNAME
+const socketEventName = controllerConstants.sensorData.SOCKETEVENT
 
 
 const addSensorData = (req, res) => {
@@ -18,38 +20,34 @@ const addSensorData = (req, res) => {
     sensor_value,
   };
 
+  const cacheClient = res.locals.cacheClient
+  const cacheKey = res.locals.cacheKey
+  const shouldFireSocketEvent = true
+
   return sensor_data.create(sensorData)
                     .then(sensorDataSynced =>
-                      afterCreateSuccess(sensorDataSynced, res)
+                      helpers.controllerHelpers.afterCreateSuccess(res, sensorDataSynced, contextName, cacheClient, cacheKey, shouldFireSocketEvent, socketEventName)
                     ).catch(error =>
                       res.status(401)
-                      .send(helpers.responseHelpers.addFailure('Sensor data', error))
+                      .send(helpers.responseHelpers.addFailure(contextName, error))
                     );
-};
-
-const afterCreateSuccess = (sensorDataSynced, res) => {
-  const updaterSocket = socket.socketClient.connect();
-  socket.socketClient.fireEvent(updaterSocket, 'newSensorData', sensorDataSynced, true);
-
-  return res.status(201)
-            .send(helpers.responseHelpers.addSuccess('Sensor data', sensorDataSynced));
 };
 
 const getAllSensorData = (req, res) => {
+  const cacheClient = res.locals.cacheClient
+  const cacheKey = res.locals.cacheKey
+
   return sensor_data.findAll()
                     .then(allSensorData =>
-                      res.status(200)
-                      .send(helpers.responseHelpers.fetchSuccess('Sensor data', allSensorData))
+                      helpers.controllerHelpers.afterFetchSuccess(res, allSensorData, contextName, cacheClient, cacheKey)
                     ).catch(error =>
                       res.status(400)
-                      .send(helpers.responseHelpers.fetchFailure('Sensor data', error))
+                      .send(helpers.responseHelpers.fetchFailure(contextName, error))
                     );
 };
 
-const sensorDataController = {
+
+export default {
   addSensorData,
   getAllSensorData,
 };
-
-
-export default sensorDataController;

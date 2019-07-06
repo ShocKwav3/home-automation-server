@@ -39,6 +39,11 @@ const compiler = webpack({
       },
     ],
   },
+  resolve: {
+    alias: {
+      projectRoot: path.resolve(__dirname),
+    }
+  },
   node: {
     __dirname: false,
   },
