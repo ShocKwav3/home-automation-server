@@ -4,9 +4,14 @@ import logger from 'morgan';
 
 import routes from 'projectRoot/routes';
 import middlewares from 'projectRoot/middlewares';
+import helpers from 'projectRoot/helpers';
 
 
 const app = express();
+
+const cacheClient = helpers.apiCacheHelpers.connect();
+
+app.set('cacheClient', cacheClient)
 
 app.use(logger('dev'));
 

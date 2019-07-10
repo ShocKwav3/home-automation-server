@@ -21,7 +21,7 @@ const addActuatorActivity = (req, res) => {
     sensor_device_id,
   }
 
-  const cacheClient = res.locals.cacheClient
+  const cacheClient = req.app.get('cacheClient')
   const cacheKey = res.locals.cacheKey
   const shouldFireSocketEvent = true
 
@@ -35,7 +35,7 @@ const addActuatorActivity = (req, res) => {
 };
 
 const getAllActuatorActivities = (req, res) => {
-  const cacheClient = res.locals.cacheClient
+  const cacheClient = req.app.get('cacheClient')
   const cacheKey = res.locals.cacheKey
 
   return actuator_activity.findAll()
