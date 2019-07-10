@@ -1,33 +1,28 @@
 #!/usr/bin/env node
 
 import http from 'http';
-import socketIO from 'socket.io';
 import debug from 'debug';
 
-import app from '../app';
+import app from 'projectRoot/app';
+import socket from 'projectRoot/socket';
 
 const debugServer = debug('plant-monitor-server:server');
 const httpServer = http.Server(app);
-const io = socketIO(httpServer);
 const port = normalizePort(process.env.PORT || '3000');
+
 app.set('port', port);
 
-/**
- * Create Socket
- */
-
-io.on('connection', function(socket){
-  console.log('an user connected');
-  socket.emit('data', {what: 'data'})
-});
+const socketConnection = new socket.socketServer(httpServer, port);
+socketConnection.connection();
 
 /**
  * Create HTTP server.
  */
 
 const serverCreated = () => {
-  console.log("Server running; Socket Ready!");
+  console.log(`Server running on port ${port}`);
 };
+
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -55,7 +50,7 @@ function normalizePort(val) {
   }
 
   return false;
-}
+};
 
 /**
  * Event listener for HTTP server "error" event.
@@ -96,3 +91,6 @@ function onListening() {
     : 'port ' + addr.port;
   debugServer('Listening on ' + bind);
 }
+
+
+export default httpServer

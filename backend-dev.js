@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const spawn = require('child_process').spawn;
 const fs = require('fs');
 
-let nodeModules = {};
+const nodeModules = {};
 fs.readdirSync('node_modules')
   .filter(function(x) {
     return ['.bin'].indexOf(x) === -1;
@@ -16,21 +16,36 @@ const compiler = webpack({
   entry: './bin/www',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: "bundle_server.js",
+    filename: 'bundle_server.js',
   },
   module: {
     rules: [
       {
         test: path.resolve(__dirname, 'bin/www'),
-        use: 'shebang-loader'
-      }
-    ]
+        use: 'shebang-loader',
+      },
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname),
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-class-properties']
+            },
+          },
+        ],
+      },
+    ],
   },
-  plugins: [
-    new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true }),
-  ],
+  resolve: {
+    alias: {
+      projectRoot: path.resolve(__dirname),
+    }
+  },
   node: {
-    __dirname: false
+    __dirname: false,
   },
   externals: nodeModules,
   target: 'node',
@@ -39,7 +54,7 @@ const compiler = webpack({
 
 const watchConfig = {
   aggregateTimeout: 300,
-  poll: 1000
+  poll: 1000,
 };
 
 let serverControl;
