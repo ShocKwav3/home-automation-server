@@ -20,7 +20,7 @@ const addSensorData = (req, res) => {
     sensor_value,
   };
 
-  const cacheClient = res.locals.cacheClient
+  const cacheClient = req.app.get('cacheClient')
   const cacheKey = res.locals.cacheKey
   const shouldFireSocketEvent = true
 
@@ -34,7 +34,7 @@ const addSensorData = (req, res) => {
 };
 
 const getAllSensorData = (req, res) => {
-  const cacheClient = res.locals.cacheClient
+  const cacheClient = req.app.get('cacheClient')
   const cacheKey = res.locals.cacheKey
 
   return sensor_data.findAll()

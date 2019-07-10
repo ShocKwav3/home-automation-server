@@ -4,7 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import Sequelize from 'sequelize'
 
-import dbconfig from '../config/configdb'
+import dbconfig from 'projectRoot/config/configdb'
 
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';

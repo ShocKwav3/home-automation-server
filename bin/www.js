@@ -12,10 +12,6 @@ const port = normalizePort(process.env.PORT || '3000');
 
 app.set('port', port);
 
-/**
- * Socket
- */
-
 const socketConnection = new socket.socketServer(httpServer, port);
 socketConnection.connection();
 
@@ -26,6 +22,7 @@ socketConnection.connection();
 const serverCreated = () => {
   console.log(`Server running on port ${port}`);
 };
+
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -94,3 +91,6 @@ function onListening() {
     : 'port ' + addr.port;
   debugServer('Listening on ' + bind);
 }
+
+
+export default httpServer

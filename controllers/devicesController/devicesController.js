@@ -27,7 +27,7 @@ const addDevice = (req, res) => {
     max_value,
   }
 
-  const cacheClient = res.locals.cacheClient
+  const cacheClient = req.app.get('cacheClient')
   const cacheKey = res.locals.cacheKey
 
   return device.create(deviceData)
@@ -40,7 +40,7 @@ const addDevice = (req, res) => {
 };
 
 const getAllDevices = (req, res) => {
-  const cacheClient = res.locals.cacheClient
+  const cacheClient = req.app.get('cacheClient')
   const cacheKey = res.locals.cacheKey
 
   return device.findAll()
@@ -54,8 +54,10 @@ const getAllDevices = (req, res) => {
 
 const updateDevice = (req, res) => {
   const deviceIdToUpdate = req.params.deviceId
-  const cacheClient = res.locals.cacheClient
+  const cacheClient = req.app.get('cacheClient')
   const cacheKey = helpers.utils.constructString('remove', 'end', `/${deviceIdToUpdate}`, res.locals.cacheKey)
+
+  req.body.updated_timestamp = new Date().toISOString()
 
   return device.findByPk(deviceIdToUpdate)
                .then(targetDevice => {
@@ -75,7 +77,7 @@ const updateDevice = (req, res) => {
 
 const deleteDevice = (req, res) => {
   const deviceIdToDelete = req.params.deviceId
-  const cacheClient = res.locals.cacheClient
+  const cacheClient = req.app.get('cacheClient')
   const cacheKey = helpers.utils.constructString('remove', 'end', `/${deviceIdToDelete}`, res.locals.cacheKey)
 
   return device.findByPk(deviceIdToDelete)
