@@ -1,4 +1,5 @@
-import model from 'projectRoot/models';
+//import model from 'projectRoot/models';
+import model from '../../models';
 import helpers from 'projectRoot/helpers';
 import { controllerConstants } from 'projectRoot/config/constants';
 
@@ -43,7 +44,7 @@ const getAllDevices = (req, res) => {
   const cacheClient = req.app.get('cacheClient')
   const cacheKey = res.locals.cacheKey
 
-  return device.findAll()
+  device.findAll()
                .then(allDevices =>
                   helpers.controllerHelpers.afterFetchSuccess(res, allDevices, contextName, cacheClient, cacheKey)
                ).catch(error =>

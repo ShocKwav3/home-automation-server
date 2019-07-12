@@ -2,21 +2,17 @@
 
 import fs from 'fs'
 import path from 'path'
-import Sequelize from 'sequelize'
 
 import dbconfig from 'projectRoot/config/configdb'
+import helpers from 'projectRoot/helpers'
 
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = dbconfig[env];
 let db = {};
-
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+console.log("FROM MODELS", helpers.dbHelpers.connectDB)
+const sequelizeObj = helpers.dbHelpers.connectDB(config);
+const sequelize = sequelizeObj.dbInstance
 
 fs
   .readdirSync(__dirname + '/../models/')
@@ -35,7 +31,7 @@ Object.keys(db).forEach(modelName => {
 });
 
 db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+db.Sequelize = sequelizeObj.dbLibImport;
 
 
 export default db

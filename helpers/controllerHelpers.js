@@ -19,7 +19,7 @@ const afterFetchSuccess = (res, synchedData, contextName, cacheClient, cacheKey)
 
   cacheClient.set(cacheKey, JSON.stringify(response));
 
-  return res.status(200).send(response);
+  res.status(200).send(response);
 };
 
 const afterUpdateSuccess = (res, synchedData, contextName, cacheClient, cacheKey, updateType) => {
