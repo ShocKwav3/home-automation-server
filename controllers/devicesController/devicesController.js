@@ -44,7 +44,7 @@ const getAllDevices = (req, res) => {
   const cacheClient = req.app.get('cacheClient')
   const cacheKey = res.locals.cacheKey
 
-  device.findAll()
+  return device.findAll()
                .then(allDevices =>
                   helpers.controllerHelpers.afterFetchSuccess(res, allDevices, contextName, cacheClient, cacheKey)
                ).catch(error =>

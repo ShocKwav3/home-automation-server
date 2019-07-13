@@ -1,7 +1,9 @@
-import { expect, assert } from 'chai';
+import { assert } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import SequelizeMock from 'sequelize-mock';
+
+import helpers from '../helpers'
 
 const proxyquireStrict = proxyquire.noCallThru()
 const deviceControllerPath = '../controllers/devicesController/devicesController.js'
@@ -54,9 +56,12 @@ describe('Device Controller', () => {
     }
   }
   const devicesModelSpy = sinon.spy(mockDevices, 'findAll')
+  const afterFetchSuccessSpy = sinon.spy(helpers.controllerHelpers, 'afterFetchSuccess')
 
-  it('Should call findAll method', () => {
-    expect(deviceControllerGET(req, res)).to.equal(undefined);
-    assert(devicesModelSpy.calledOnce);
+  it('Should fetch and pass to response helper method', async () => {
+    await deviceControllerGET(req, res)
+
+    assert(afterFetchSuccessSpy.calledOnce)
+    assert(devicesModelSpy.calledOnce)
   });
 });
