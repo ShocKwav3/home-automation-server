@@ -1,14 +1,41 @@
 version: '3'
 services:
-  dev:
-    image: home_automation_server
+  redis:
+    image: redis
+    networks:
+      - servernet
+  db:
+    image: postgres
+    networks:
+      - servernet
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+  server:
+    image: home_automation_server:latest
     volumes:
       - nodemodules:/usr/src/service/node_modules
       - .:/apps/home_automation_server
     #working_dir: /apps/home_automation_server
-    command: yarn start
+    #command: /bin/sh -c "yarn build && npx sequelize db:migrate && yarn startProd"
+    command: ["sh", "entrypoint.sh", "run"]
     ports:
       - 3000:3000
+    depends_on:
+      - db
+      - redis
+    networks:
+      - servernet
+    environment:
+      - DB_HOST
+      - REDIS_HOST
+      - NODE_ENV
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+networks:
+  servernet:
 volumes:
   nodemodules:
     external: true
