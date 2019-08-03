@@ -13,7 +13,7 @@ fs.readdirSync('node_modules')
   });
 
 const compiler = webpack({
-  entry: './bin/www',
+  entry: './src/bin/www',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle_server.js',
@@ -21,7 +21,7 @@ const compiler = webpack({
   module: {
     rules: [
       {
-        test: path.resolve(__dirname, 'bin/www'),
+        test: path.resolve(__dirname, 'src/bin/www'),
         use: 'shebang-loader',
       },
       {

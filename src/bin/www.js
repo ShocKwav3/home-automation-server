@@ -3,8 +3,8 @@
 import http from 'http';
 import debug from 'debug';
 
-import app from 'projectRoot/app';
-import socket from 'projectRoot/socket';
+import app from 'projectRoot/src/app';
+import socket from 'projectRoot/src/socket';
 
 const debugServer = debug('plant-monitor-server:server');
 const httpServer = http.Server(app);

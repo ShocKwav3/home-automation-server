@@ -3,5 +3,7 @@ setup:
 buildServer:
 	docker build -t home_automation_server .
 	#docker-compose -f docker-compose.builder.yml run --rm install
-dev:
+serverUp:
 	docker-compose up
+cleanDist:
+	rm -rf dist/

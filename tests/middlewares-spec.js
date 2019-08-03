@@ -1,8 +1,8 @@
 import { expect, assert } from 'chai';
 import sinon from 'sinon'
 
-import middlewares from '../middlewares'
-import helpers from '../helpers'
+import middlewares from '../src/middlewares'
+import helpers from '../src/helpers'
 
 
 describe('API cache GET request', () => {

@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import SequelizeMock from 'sequelize-mock';
 
-import helpers from '../helpers'
+import helpers from '../src/helpers'
 
 const proxyquireStrict = proxyquire.noCallThru()
 const deviceControllerPath = '../controllers/devicesController/devicesController.js'
