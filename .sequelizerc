@@ -1,8 +1,19 @@
 const path = require('path');
 
-module.exports = {
-  "config": path.resolve('./config', 'configdb.json'),
-  "models-path": path.resolve('./models'),
-  "seeders-path": path.resolve('./seeders'),
-  "migrations-path": path.resolve('./migrations')
+const prodOptions = {
+  "config": path.resolve('./dist/config', 'configdb.js'),
+  "models-path": path.resolve('./dist/models'),
+  "seeders-path": path.resolve('./dist/seeders'),
+  "migrations-path": path.resolve('./dist/migrations')
 };
+
+const devOptions = {
+  "config": path.resolve('./src/config', 'configdb.js'),
+  "models-path": path.resolve('./src/models'),
+  "seeders-path": path.resolve('./src/seeders'),
+  "migrations-path": path.resolve('./src/migrations')
+};
+
+const sequelizeOptions = process.env.NODE_ENV === 'production' ? prodOptions : devOptions
+
+module.exports = sequelizeOptions
