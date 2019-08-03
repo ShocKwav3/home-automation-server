@@ -1,6 +1,6 @@
-import model from 'projectRoot/models'
-import helpers from 'projectRoot/helpers'
-import { controllerConstants } from 'projectRoot/config/constants';
+import model from 'projectRoot/src/models'
+import helpers from 'projectRoot/src/helpers'
+import { controllerConstants } from 'projectRoot/src/config/constants';
 
 const { sensor_data } = model;
 const contextName = controllerConstants.sensorData.CONTEXTNAME

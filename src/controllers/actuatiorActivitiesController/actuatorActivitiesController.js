@@ -1,6 +1,6 @@
-import model from 'projectRoot/models';
-import helpers from 'projectRoot/helpers';
-import { controllerConstants } from 'projectRoot/config/constants';
+import model from 'projectRoot/src/models';
+import helpers from 'projectRoot/src/helpers';
+import { controllerConstants } from 'projectRoot/src/config/constants';
 
 const { actuator_activity } = model;
 const contextName = controllerConstants.actuatorActivity.CONTEXTNAME
