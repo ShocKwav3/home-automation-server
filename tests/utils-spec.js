@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import helpers from '../helpers'
+import helpers from '../src/helpers'
 
 
 describe('Utils Methods', () => {

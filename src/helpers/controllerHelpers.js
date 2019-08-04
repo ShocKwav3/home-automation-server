@@ -1,4 +1,4 @@
-import socket from 'projectRoot/socket';
+import socket from 'projectRoot/src/socket';
 import responseHelpers from './responseHelpers';
 
 

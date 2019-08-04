@@ -1,7 +1,7 @@
 //import model from 'projectRoot/models';
 import model from '../../models';
-import helpers from 'projectRoot/helpers';
-import { controllerConstants } from 'projectRoot/config/constants';
+import helpers from 'projectRoot/src/helpers';
+import { controllerConstants } from 'projectRoot/src/config/constants';
 
 const { device } = model;
 const contextName = controllerConstants.device.CONTEXTNAME

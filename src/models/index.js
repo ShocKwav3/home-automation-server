@@ -3,14 +3,14 @@
 import fs from 'fs'
 import path from 'path'
 
-import dbconfig from 'projectRoot/config/configdb'
-import helpers from 'projectRoot/helpers'
-
+import dbconfig from 'projectRoot/src/config/configdb'
+import helpers from 'projectRoot/src/helpers'
+// && cp ./src/config/configdb.json ./dist/config/
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = dbconfig[env];
 let db = {};
-console.log("FROM MODELS", helpers.dbHelpers.connectDB)
+console.log("CHECKOUT THIS", env, Object.keys(config))
 const sequelizeObj = helpers.dbHelpers.connectDB(config);
 const sequelize = sequelizeObj.dbInstance
 
