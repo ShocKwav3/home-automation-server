@@ -13,10 +13,11 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
   server:
-    image: home_automation_server:latest
-    volumes:
-      - nodemodules:/usr/src/service/node_modules
-      - .:/apps/home_automation_server
+    image: home_automation_server
+    #only enable volumes for development
+    #volumes:
+      #- nodemodules:/usr/src/service/node_modules
+      #- .:/apps/home_automation_server
     #working_dir: /apps/home_automation_server
     #command: /bin/sh -c "yarn build && npx sequelize db:migrate && yarn startProd"
     command: ["sh", "entrypoint.sh", "run"]
