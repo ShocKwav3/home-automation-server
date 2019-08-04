@@ -5,5 +5,7 @@ buildServer:
 	#docker-compose -f docker-compose.builder.yml run --rm install
 serverUp:
 	docker-compose up
+serverDown:
+	docker-compose down
 cleanDist:
 	rm -rf dist/
