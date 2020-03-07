@@ -17,7 +17,9 @@ const afterCreateSuccess = (res, synchedData, contextName, cacheClient, cacheKey
 const afterFetchSuccess = (res, synchedData, contextName, cacheClient, cacheKey) => {
   const response = responseHelpers.fetchSuccess(contextName, synchedData)
 
-  cacheClient.set(cacheKey, JSON.stringify(response));
+  if(cacheClient && cacheClient){
+    cacheClient.set(cacheKey, JSON.stringify(response));
+  }
 
   res.status(200).send(response);
 };

@@ -1,12 +1,18 @@
-import actuatorActivitiesController from './actuatiorActivitiesController';
+import deviceDataController from './deviceDataController';
 import devicesController from './devicesController';
-import sensorDataController from './sensorDataController';
+import usersController from './usersController';
+import rolesController from './rolesController';
+import hubsController from './hubsController';
+import categoriesController from './categoriesController';
 
 
 const controllers = {
-  actuatorActivitiesController,
+  deviceDataController,
   devicesController,
-  sensorDataController,
+  usersController,
+  rolesController,
+  hubsController,
+  categoriesController,
 };
 
 

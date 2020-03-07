@@ -1,4 +1,9 @@
 'use strict';
+
+import hub from './hub';
+import category from './category';
+
+
 module.exports = (sequelize, DataTypes) => {
   const device = sequelize.define('device', {
     name: {
@@ -8,18 +13,26 @@ module.exports = (sequelize, DataTypes) => {
         msg: 'Please enter device name',
       },
     },
-    role: {
-      type: DataTypes.STRING,
+    hub_id: {
+      type: DataTypes.INTEGER,
       allowNull: {
         args: false,
-        msg: 'Please specify role (actuator/sensor)',
+        msg: 'Please specify user id',
+      },
+      references: {
+        model: hub,
+        key: 'id',
       },
     },
-    type: {
+    category_id: {
       type: DataTypes.STRING,
       allowNull: {
         args: false,
-        msg: 'Please enter type (motor/moisture sensor)',
+        msg: 'Please enter category id (motor/moisture sensor)',
+      },
+      references: {
+        model: category,
+        key: 'id',
       },
     },
     io_pin: {
@@ -64,16 +77,17 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   device.associate = function(models) {
-    device.hasMany(models.actuator_activity, {
-      foreignKey: 'actuator_device_id',
-      as: 'actuator_activities',
+    device.hasMany(models.device_data, {
+      foreignKey: 'device_id',
+      as: 'device_data',
     });
-    device.hasMany(models.actuator_activity, {
-      foreignKey: 'sensor_device_id',
+    device.belongsTo(models.hub, {
+      foreignKey: 'hub_id',
+      as: 'hub',
     });
-    device.hasMany(models.sensor_data, {
-      foreignKey: 'sensor_device_id',
-      as: 'sensor_data',
+    device.belongsTo(models.category, {
+      foreignKey: 'category_id',
+      as: 'category',
     });
   };
 

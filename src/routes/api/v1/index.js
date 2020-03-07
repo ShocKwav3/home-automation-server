@@ -1,15 +1,21 @@
 import express from 'express';
 
-import actuatorActivities from './actuatorActivities';
+import deviceData from './deviceData';
 import devices from './devices';
-import sensorData from './sensorData';
+import users from './users';
+import roles from './roles';
+import hubs from './hubs';
+import categories from './categories';
 
 
 let router = express.Router();
 
-router.use('/actuatorActivities', actuatorActivities);
+router.use('/deviceData', deviceData);
 router.use('/devices', devices);
-router.use('/sensorData', sensorData);
+router.use('/users', users);
+router.use('/roles', roles);
+router.use('/hubs', hubs);
+router.use('/categories', categories);
 
 
 export default router;

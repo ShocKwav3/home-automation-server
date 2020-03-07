@@ -8,14 +8,8 @@ class socketServer {
     console.log(`Socket ready on ${port}`)
   };
 
-  onNewSensorData = (data, nextTask) => {
-    this.io.emit('newSensorDataForClient', data);
-
-    if(nextTask) nextTask();
-  };
-
-  onNewActuatorActivity = (data, nextTask) => {
-    this.io.emit('newActuatorActivityForClient', data);
+  onNewDeviceData = (data, nextTask) => {
+    this.io.emit('newDeviceDataForClient', data);
 
     if(nextTask) nextTask();
   }
@@ -27,9 +21,7 @@ class socketServer {
   afterSocketConnection = (socket) => {
     console.log("NEW SOCKET CONNECTION")
 
-    socket.on('newSensorData', this.onNewSensorData);
-
-    socket.on('newActuatorActivity', this.onNewActuatorActivity);
+    socket.on('newDeviceData', this.onNewDeviceData);
 
     socket.on('disconnect', this.onDisconnect);
   };

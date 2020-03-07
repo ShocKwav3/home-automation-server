@@ -1,17 +1,17 @@
-//import model from 'projectRoot/models';
-import model from '../../models';
-import helpers from 'projectRoot/src/helpers';
-import { controllerConstants } from 'projectRoot/src/config/constants';
+import model from 'src/models';
+import helpers from 'src/helpers';
+import { controllerConstants } from 'src/config/constants';
 
-const { device } = model;
+const { device, category, role } = model;
 const contextName = controllerConstants.device.CONTEXTNAME
 
 
 const addDevice = (req, res) => {
   const {
     name,
-    role,
-    type,
+    user_id,
+    role_id,
+    category_id,
     io_pin,
     added_timestamp,
     min_value,
@@ -20,8 +20,9 @@ const addDevice = (req, res) => {
 
   const deviceData = {
     name,
-    role,
-    type,
+    user_id,
+    role_id,
+    category_id,
     io_pin,
     added_timestamp,
     min_value,
@@ -41,10 +42,10 @@ const addDevice = (req, res) => {
 };
 
 const getAllDevices = (req, res) => {
-  const cacheClient = req.app.get('cacheClient')
-  const cacheKey = res.locals.cacheKey
+  const cacheClient = req.app.get('cacheClient');
+  const cacheKey = res.locals.cacheKey;
 
-  return device.findAll()
+  return device.findAll({include:[{model: category, include: [{model: role, as: 'role',}], as: 'category'}]})
                .then(allDevices =>
                   helpers.controllerHelpers.afterFetchSuccess(res, allDevices, contextName, cacheClient, cacheKey)
                ).catch(error =>

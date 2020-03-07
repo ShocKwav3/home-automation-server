@@ -1,13 +1,21 @@
 export const controllerConstants = {
-  sensorData: {
-    CONTEXTNAME: 'Sensor Data',
-    SOCKETEVENT: 'newSensorData',
-  },
-  actuatorActivity: {
-    CONTEXTNAME: 'Actuator activity',
-    SOCKETEVENT: 'newActuatorActivity',
-  },
-  device: {
-    CONTEXTNAME: 'Device',
-  },
-}
+    deviceData: {
+        CONTEXTNAME: 'Device Data',
+        SOCKETEVENT: 'newDeviceData',
+    },
+    device: {
+        CONTEXTNAME: 'Device',
+    },
+    user: {
+        CONTEXTNAME: 'USER',
+    },
+    role: {
+        CONTEXTNAME: 'Role',
+    },
+    hub: {
+        CONTEXTNAME: 'hub',
+    },
+    category: {
+        CONTEXTNAME: 'category',
+    },
+};
