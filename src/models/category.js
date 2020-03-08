@@ -30,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
   category.associate = function(models) {
     category.belongsTo(models.role, {
       foreignKey: 'role_id',
-      as: 'role',
     });
 
     category.hasMany(models.device, {

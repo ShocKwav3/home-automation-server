@@ -79,15 +79,12 @@ module.exports = (sequelize, DataTypes) => {
   device.associate = function(models) {
     device.hasMany(models.device_data, {
       foreignKey: 'device_id',
-      as: 'device_data',
     });
     device.belongsTo(models.hub, {
       foreignKey: 'hub_id',
-      as: 'hub',
     });
     device.belongsTo(models.category, {
       foreignKey: 'category_id',
-      as: 'category',
     });
   };
 

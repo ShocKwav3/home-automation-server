@@ -42,11 +42,9 @@ module.exports = (sequelize, DataTypes) => {
   hub.associate = function(models) {
     hub.hasMany(models.device, {
       foreignKey: 'id',
-      as: 'devices',
     });
     hub.belongsTo(models.user, {
       foreignKey: 'user_id',
-      as: 'user',
     });
   };
 
