@@ -44,7 +44,25 @@ const addDeviceData = (req, res) => {
 }
 
 const getAllDeviceData = (req, res) => {
-    return device_data.findAll()
+    const query = {
+        include: [{
+            model: device,
+            attributes: ['id'],
+            include: [{
+                model: category,
+                attributes: ['id'],
+                include: [{
+                    model: role,
+                    attributes: ['id'],
+                    required: true,
+                }],
+                required: true,
+            }],
+            required: true,
+        }],
+    };
+
+    return device_data.findAll(query)
                       .then(allDeviceData =>
                           res.status(200)
                              .send(helpers.controllerHelpers.afterFetchSuccess(allDeviceData, contextName, res.locals.cacheHandler))
@@ -103,6 +121,11 @@ const getDeviceDataByCategory = (req, res) => {
                         [Op.eq]: categoryId,
                     },
                 },
+                include: [{
+                    model: role,
+                    attributes: ['id'],
+                    required: true,
+                }],
                 required: true,
             }],
             required: true,
