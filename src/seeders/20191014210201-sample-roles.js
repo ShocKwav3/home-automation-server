@@ -1,5 +1,6 @@
 'use strict';
 
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('roles', [
@@ -15,4 +16,4 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.bulkDelete('roles', null, {});
   }
-};
+}

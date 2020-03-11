@@ -27,7 +27,7 @@ const addHub = (req, res) => {
                   res.status(401)
                      .send(helpers.responseHelpers.addFailure(contextName, error))
               );
-};
+}
 
 const getAllHubs = (req, res) => {
     return hub.findAll()
@@ -38,7 +38,7 @@ const getAllHubs = (req, res) => {
                   res.status(400)
                      .send(helpers.responseHelpers.fetchFailure(contextName, error))
               );
-};
+}
 
 const updateHub = (req, res) => {
     const hubIdToUpdate = req.params.hubId;
@@ -58,8 +58,8 @@ const updateHub = (req, res) => {
               }).catch(error =>
                   res.status(400)
                      .send(helpers.responseHelpers.updateFailure(contextName, error))
-                 );
-};
+              );
+}
 
 const deleteHub = (req, res) => {
     const hubIdToDelete = req.params.hubId;
@@ -77,7 +77,7 @@ const deleteHub = (req, res) => {
               }).catch(error =>
                   res.status(400)
                      .send(helpers.responseHelpers.deleteFailure(contextName, error))
-                 );
+              );
 }
 
 export default {
@@ -85,4 +85,4 @@ export default {
   getAllHubs,
   updateHub,
   deleteHub,
-};
+}

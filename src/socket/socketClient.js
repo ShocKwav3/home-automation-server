@@ -7,9 +7,9 @@ const fireEvent = (socket, name, data, disconnectAfterTransmission) => {
   const disconnectSocket = disconnectAfterTransmission ? socket.disconnect : undefined;
 
   socket.emit(name, {data}, disconnectSocket);
-};
+}
 
 export default {
   connect,
   fireEvent,
-};
+}

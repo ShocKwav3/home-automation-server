@@ -1,10 +1,11 @@
 'use strict';
 
+
 import fs from 'fs';
 import path from 'path';
 
-import dbconfig from 'projectRoot/src/config/configdb';
-import helpers from 'projectRoot/src/helpers';
+import dbconfig from 'src/config/configdb';
+import helpers from 'src/helpers';
 // && cp ./src/config/configdb.json ./dist/config/
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';

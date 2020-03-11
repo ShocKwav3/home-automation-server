@@ -1,5 +1,6 @@
 'use strict';
 
+
 import role from './role';
 
 
@@ -38,4 +39,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return category;
-};
+}

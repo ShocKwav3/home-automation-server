@@ -1,5 +1,6 @@
 'use strict';
 
+
 import user from './user';
 
 
@@ -49,4 +50,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return hub;
-};
+}

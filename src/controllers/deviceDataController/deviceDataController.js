@@ -41,7 +41,7 @@ const addDeviceData = (req, res) => {
                           res.status(401)
                              .send(helpers.responseHelpers.addFailure(contextName, error))
                       );
-};
+}
 
 const getAllDeviceData = (req, res) => {
     return device_data.findAll()
@@ -52,7 +52,7 @@ const getAllDeviceData = (req, res) => {
                           res.status(400)
                              .send(helpers.responseHelpers.fetchFailure(contextName, error))
                       );
-};
+}
 
 const getDeviceDataByRole = (req, res) => {
     const roleId = req.params.roleId;
@@ -87,7 +87,7 @@ const getDeviceDataByRole = (req, res) => {
                           res.status(400)
                              .send(helpers.responseHelpers.fetchFailure(contextName, error))
                       );
-};
+}
 
 const getDeviceDataByCategory = (req, res) => {
     const categoryId = req.params.categoryId;
@@ -117,7 +117,7 @@ const getDeviceDataByCategory = (req, res) => {
                           res.status(400)
                              .send(helpers.responseHelpers.fetchFailure(contextName, error))
                       );
-};
+}
 
 
 export default {
@@ -125,4 +125,4 @@ export default {
   getAllDeviceData,
   getDeviceDataByRole,
   getDeviceDataByCategory,
-};
+}

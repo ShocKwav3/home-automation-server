@@ -3,6 +3,7 @@
     "baseUrl": "./",
     "paths": {
       "projectRoot/*": ["./*"],
+      "src/*": ["./src/*"],
     },
   },
   "exclude": ["node_modules"],

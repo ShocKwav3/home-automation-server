@@ -3,7 +3,7 @@ import helpers from 'src/helpers';
 import { controllerConstants } from 'src/config/constants';
 
 const { role } = model;
-const contextName = controllerConstants.role.CONTEXTNAME
+const contextName = controllerConstants.role.CONTEXTNAME;
 
 
 const getAllRoles = (req, res) => {
@@ -15,9 +15,9 @@ const getAllRoles = (req, res) => {
                    res.status(400)
                       .send(helpers.responseHelpers.fetchFailure(contextName, error))
                );
-};
+}
 
 
 export default {
     getAllRoles,
-};
+}

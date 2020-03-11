@@ -6,9 +6,9 @@ import utils from './utils';
 
 
 export default {
-  responseHelpers,
-  apiCacheHelpers,
-  controllerHelpers,
-  utils,
-  dbHelpers,
-};
+    responseHelpers,
+    apiCacheHelpers,
+    controllerHelpers,
+    utils,
+    dbHelpers,
+}

@@ -1,6 +1,6 @@
-import cacheMiddlewares from './cacheMiddlewares'
+import cacheMiddlewares from './cacheMiddlewares';
 
 
 export default {
-  cacheMiddlewares,
+    cacheMiddlewares,
 }

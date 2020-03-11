@@ -1,6 +1,6 @@
 import express from 'express';
 
-import controllers from 'projectRoot/src/controllers';
+import controllers from 'src/controllers';
 
 
 let router = express.Router();

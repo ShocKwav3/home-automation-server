@@ -1,5 +1,6 @@
 'use strict';
 
+
 import hub from './hub';
 import category from './category';
 
@@ -89,4 +90,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return device;
-};
+}

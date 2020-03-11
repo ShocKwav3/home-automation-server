@@ -1,5 +1,6 @@
 'use strict';
 
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('device_data', [{
@@ -97,4 +98,4 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.bulkDelete('device_data', null, {});
   }
-};
+}

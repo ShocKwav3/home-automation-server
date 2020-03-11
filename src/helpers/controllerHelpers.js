@@ -1,4 +1,4 @@
-import socket from 'projectRoot/src/socket';
+import socket from 'src/socket';
 import responseHelpers from './responseHelpers';
 
 
@@ -13,17 +13,17 @@ const afterCreateSuccess = (syncedData, contextName, cacheHandler, shouldFireSoc
     };
 
     return responseHelpers.addSuccess(contextName, syncedData);
-};
+}
 
 const afterFetchSuccess = (syncedData, contextName, cacheHandler) => {
-    const response = responseHelpers.fetchSuccess(contextName, syncedData)
+    const response = responseHelpers.fetchSuccess(contextName, syncedData);
     
     if(typeof cacheHandler === 'function') {
         cacheHandler('set', syncedData);
     }
 
     return response;
-};
+}
 
 const afterUpdateSuccess = (syncedData, contextName, cacheHandler, updateType) => {
     const responseHelperMethod = updateType === 'delete' ? responseHelpers.deleteSuccess : responseHelpers.updateSuccess;
@@ -33,11 +33,11 @@ const afterUpdateSuccess = (syncedData, contextName, cacheHandler, updateType) =
     }
 
     return responseHelperMethod(contextName, syncedData);
-};
+}
 
 
 export default {
   afterCreateSuccess,
   afterFetchSuccess,
   afterUpdateSuccess,
-};
+}

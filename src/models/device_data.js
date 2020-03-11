@@ -1,5 +1,6 @@
 'use strict';
 
+
 import device from './device';
 
 
@@ -48,4 +49,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return device_data;
-};
+}

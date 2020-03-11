@@ -17,19 +17,15 @@ const getCacheClientAndKeys = async (req, res, cacheKeyPostFix, postFixOperation
 
     if(_.isEmpty(cacheKeys)) {
         cacheKeys = [cacheKeyPrefix];
-    };
-
-    console.log("BLALALALALALAL", allCacheKeys, cacheKeys, cacheKeyPrefix, res.locals.cacheKey);
+    }
     
     return {
         cacheClient,
         cacheKeys,
-    };
-};
+    }
+}
 
 const handleCache = (cacheClient, cacheKeys) => (operation='set', data) => {
-    console.log("AAAND HANDLING", cacheKeys, operation);
-
     if(!cacheClient) {
         return;
     };
@@ -41,11 +37,11 @@ const handleCache = (cacheClient, cacheKeys) => (operation='set', data) => {
             cacheClient.del(cacheKey);
         };
     });
-};
+}
 
 
 export default {
   connect,
   handleCache,
   getCacheClientAndKeys,
-};
+}

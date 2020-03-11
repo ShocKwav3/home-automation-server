@@ -41,7 +41,7 @@ const addDevice = (req, res) => {
                     res.status(401)
                        .send(helpers.responseHelpers.addFailure(contextName, error))
                 );
-};
+}
 
 const getAllDevices = (req, res) => {
     const query = {
@@ -53,9 +53,9 @@ const getAllDevices = (req, res) => {
             {
                 model: hub,
                 include: user,
-            }
+            },
         ],
-    }
+    };
 
     return device.findAll(query)
                  .then(allDevices =>
@@ -65,12 +65,12 @@ const getAllDevices = (req, res) => {
                      res.status(400)
                         .send(helpers.responseHelpers.fetchFailure(contextName, error))
                  );
-};
+}
 
 const updateDevice = (req, res) => {
-    const deviceIdToUpdate = req.params.deviceId
+    const deviceIdToUpdate = req.params.deviceId;
 
-    req.body.updated_timestamp = new Date().toISOString()
+    req.body.updated_timestamp = new Date().toISOString();
 
     return device.findByPk(deviceIdToUpdate)
                  .then(targetDevice =>
@@ -86,7 +86,7 @@ const updateDevice = (req, res) => {
                     res.status(402)
                        .send(helpers.responseHelpers.updateFailure(contextName, error))
                  );
-};
+}
 
 const deleteDevice = (req, res) => {
     const deviceIdToDelete = req.params.deviceId;
@@ -107,11 +107,11 @@ const deleteDevice = (req, res) => {
                      res.status(403)
                         .send(helpers.responseHelpers.deleteFailure(contextName, error))
                  );
-};
+}
 
 export default {
     addDevice,
     getAllDevices,
     updateDevice,
     deleteDevice,
-};
+}

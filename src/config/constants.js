@@ -18,4 +18,4 @@ export const controllerConstants = {
     category: {
         CONTEXTNAME: 'category',
     },
-};
+}

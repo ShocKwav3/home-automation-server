@@ -4,7 +4,7 @@ import { controllerConstants } from 'src/config/constants';
 
 
 const { category } = model;
-const contextName = controllerConstants.category.CONTEXTNAME
+const contextName = controllerConstants.category.CONTEXTNAME;
 
 const getAllCategories = (req, res) => {
     return category.findAll()
@@ -15,9 +15,9 @@ const getAllCategories = (req, res) => {
                        res.status(400)
                           .send(helpers.responseHelpers.fetchFailure(contextName, error))
                    );
-};
+}
 
 
 export default {
     getAllCategories,
-};
+}

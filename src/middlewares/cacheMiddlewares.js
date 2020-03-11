@@ -32,7 +32,7 @@ const checkApiCache = (req, res, next) => {
 const prepareCacheHandler = (paramToConsider=undefined) => async (req, res, next) => {
     const { cacheClient, cacheKeys } = await helpers.apiCacheHelpers.getCacheClientAndKeys(req, res, req.params[paramToConsider]);
     const cacheHandler = helpers.apiCacheHelpers.handleCache(cacheClient, cacheKeys);
-    console.log("YEEEEEEEELOOW", paramToConsider, req.params[paramToConsider], cacheKeys)
+    
     try {
         res.locals.cacheHandler = cacheHandler;
         next();
