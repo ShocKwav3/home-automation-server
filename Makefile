@@ -9,3 +9,4 @@ serverDown:
 	docker-compose down
 cleanDist:
 	rm -rf dist/
+	

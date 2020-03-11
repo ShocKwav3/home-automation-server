@@ -1,105 +1,117 @@
-//import model from 'projectRoot/models';
-import model from '../../models';
-import helpers from 'projectRoot/src/helpers';
-import { controllerConstants } from 'projectRoot/src/config/constants';
+import model from 'src/models';
+import helpers from 'src/helpers';
+import { controllerConstants } from 'src/config/constants';
 
-const { device } = model;
-const contextName = controllerConstants.device.CONTEXTNAME
 
+const {
+    device,
+    category,
+    role,
+    hub,
+    user,
+} = model;
+const contextName = controllerConstants.device.CONTEXTNAME;
 
 const addDevice = (req, res) => {
-  const {
-    name,
-    role,
-    type,
-    io_pin,
-    added_timestamp,
-    min_value,
-    max_value,
-  } = req.body;
+    const {
+        name,
+        hub_id,
+        category_id,
+        io_pin,
+        added_timestamp,
+        min_value,
+        max_value,
+    } = req.body;
 
-  const deviceData = {
-    name,
-    role,
-    type,
-    io_pin,
-    added_timestamp,
-    min_value,
-    max_value,
-  }
+    const deviceData = {
+        name,
+        hub_id,
+        category_id,
+        io_pin,
+        added_timestamp,
+        min_value,
+        max_value,
+    };
 
-  const cacheClient = req.app.get('cacheClient')
-  const cacheKey = res.locals.cacheKey
-
-  return device.create(deviceData)
-               .then(deviceDataSynced =>
-                  helpers.controllerHelpers.afterCreateSuccess(res, deviceDataSynced, contextName, cacheClient, cacheKey)
-               ).catch(error =>
-                res.status(401)
-                .send(helpers.responseHelpers.addFailure(contextName, error))
-               );
-};
+    return device.create(deviceData)
+                .then(deviceDataSynced =>
+                    res.status(201)
+                       .send(helpers.controllerHelpers.afterCreateSuccess(deviceDataSynced, contextName, res.locals.cacheHandler))
+                ).catch(error =>
+                    res.status(401)
+                       .send(helpers.responseHelpers.addFailure(contextName, error))
+                );
+}
 
 const getAllDevices = (req, res) => {
-  const cacheClient = req.app.get('cacheClient')
-  const cacheKey = res.locals.cacheKey
+    const query = {
+        include: [
+            {
+                model: category,
+                include: role,
+            },
+            {
+                model: hub,
+                include: user,
+            },
+        ],
+    };
 
-  return device.findAll()
-               .then(allDevices =>
-                  helpers.controllerHelpers.afterFetchSuccess(res, allDevices, contextName, cacheClient, cacheKey)
-               ).catch(error =>
-                 res.status(400)
-                 .send(helpers.responseHelpers.fetchFailure(contextName, error))
-               );
-};
+    return device.findAll(query)
+                 .then(allDevices =>
+                    res.status(200)
+                       .send(helpers.controllerHelpers.afterFetchSuccess(allDevices, contextName, res.locals.cacheHandler))
+                 ).catch(error =>
+                     res.status(400)
+                        .send(helpers.responseHelpers.fetchFailure(contextName, error))
+                 );
+}
 
 const updateDevice = (req, res) => {
-  const deviceIdToUpdate = req.params.deviceId
-  const cacheClient = req.app.get('cacheClient')
-  const cacheKey = helpers.utils.constructString('remove', 'end', `/${deviceIdToUpdate}`, res.locals.cacheKey)
+    const deviceIdToUpdate = req.params.deviceId;
 
-  req.body.updated_timestamp = new Date().toISOString()
+    req.body.updated_timestamp = new Date().toISOString();
 
-  return device.findByPk(deviceIdToUpdate)
-               .then(targetDevice => {
-                 targetDevice.update(req.body, { fields: Object.keys(req.body) })
-                 .then(deviceDataUpdated =>
-                   helpers.controllerHelpers.afterUpdateSuccess(res, deviceDataUpdated, contextName, cacheClient, cacheKey, 'update')
+    return device.findByPk(deviceIdToUpdate)
+                 .then(targetDevice =>
+                     targetDevice.update(req.body, { fields: Object.keys(req.body) })
+                                 .then(deviceDataUpdated =>
+                                     res.status(202)
+                                        .send(helpers.controllerHelpers.afterUpdateSuccess(deviceDataUpdated, contextName, res.locals.cacheHandler, 'update'))
+                                 ).catch(error =>
+                                     res.status(402)
+                                        .send(helpers.responseHelpers.updateFailure(contextName, error))
+                                 )
                  ).catch(error =>
-                   res.status(400)
-                   .send(helpers.responseHelpers.updateFailure(contextName, error))
-                 )
-               })
-               .catch(error =>
-                 res.status(400)
-                 .send(helpers.responseHelpers.updateFailure(contextName, error))
-               );
-};
+                    res.status(402)
+                       .send(helpers.responseHelpers.updateFailure(contextName, error))
+                 );
+}
 
 const deleteDevice = (req, res) => {
-  const deviceIdToDelete = req.params.deviceId
-  const cacheClient = req.app.get('cacheClient')
-  const cacheKey = helpers.utils.constructString('remove', 'end', `/${deviceIdToDelete}`, res.locals.cacheKey)
+    const deviceIdToDelete = req.params.deviceId;
 
-  return device.findByPk(deviceIdToDelete)
-               .then(targetDevice => {
-                 targetDevice.destroy()
-                 .then(() =>
-                   helpers.controllerHelpers.afterUpdateSuccess(res, null, contextName, cacheClient, cacheKey, 'delete')
+    return device.findByPk(deviceIdToDelete)
+                 .then(targetDevice => 
+                     targetDevice.destroy()
+                                 .then(() =>{
+                                     console.log("SUCESSFULLY DELETED, ", JSON.stringify(targetDevice));
+                                     res.status(203)
+                                        .send(helpers.controllerHelpers.afterUpdateSuccess(null, contextName, res.locals.cacheHandler, 'delete'))
+                                 }).catch(error =>{
+                                    console.log("PROBLEM, ", JSON.stringify(targetDevice), JSON.stringify(error), error);
+                                     res.status(403)
+                                        .send(helpers.responseHelpers.deleteFailure(contextName, error))
+                                 })
                  ).catch(error =>
-                   res.status(400)
-                   .send(helpers.responseHelpers.deleteFailure(contextName, error))
-                 )
-               })
-               .catch(error =>
-                 res.status(400)
-                 .send(helpers.responseHelpers.deleteFailure(contextName, error))
-               );
+                     res.status(403)
+                        .send(helpers.responseHelpers.deleteFailure(contextName, error))
+                 );
 }
 
 export default {
-  addDevice,
-  getAllDevices,
-  updateDevice,
-  deleteDevice,
-};
+    addDevice,
+    getAllDevices,
+    updateDevice,
+    deleteDevice,
+}

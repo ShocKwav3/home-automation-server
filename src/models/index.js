@@ -1,18 +1,18 @@
 'use strict';
 
-import fs from 'fs'
-import path from 'path'
 
-import dbconfig from 'projectRoot/src/config/configdb'
-import helpers from 'projectRoot/src/helpers'
+import fs from 'fs';
+import path from 'path';
+
+import dbconfig from 'src/config/configdb';
+import helpers from 'src/helpers';
 // && cp ./src/config/configdb.json ./dist/config/
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = dbconfig[env];
 let db = {};
-console.log("CHECKOUT THIS", env, Object.keys(config))
 const sequelizeObj = helpers.dbHelpers.connectDB(config);
-const sequelize = sequelizeObj.dbInstance
+const sequelize = sequelizeObj.dbInstance;
 
 fs
   .readdirSync(__dirname + '/../models/')
@@ -27,11 +27,11 @@ fs
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
-  }
+  };
 });
 
 db.sequelize = sequelize;
 db.Sequelize = sequelizeObj.dbLibImport;
 
 
-export default db
+export default db;
