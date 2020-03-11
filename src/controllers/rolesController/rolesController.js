@@ -7,16 +7,14 @@ const contextName = controllerConstants.role.CONTEXTNAME
 
 
 const getAllRoles = (req, res) => {
-    const cacheClient = req.app.get('cacheClient');
-    const cacheKey = res.locals.cacheKey;
-
     return role.findAll()
-                .then(allRoles =>
-                    helpers.controllerHelpers.afterFetchSuccess(res, allRoles, contextName, cacheClient, cacheKey)
-                ).catch(error =>
-                    res.status(400)
-                    .send(helpers.responseHelpers.fetchFailure(contextName, error))
-                );
+               .then(allRoles =>
+                   res.status(200)
+                      .send(helpers.controllerHelpers.afterFetchSuccess(allRoles, contextName))
+               ).catch(error =>
+                   res.status(400)
+                      .send(helpers.responseHelpers.fetchFailure(contextName, error))
+               );
 };
 
 

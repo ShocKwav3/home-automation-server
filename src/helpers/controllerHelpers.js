@@ -2,35 +2,37 @@ import socket from 'projectRoot/src/socket';
 import responseHelpers from './responseHelpers';
 
 
-const afterCreateSuccess = (res, synchedData, contextName, cacheClient, cacheKey, shouldFireSocketEvent=false, socketEventName) => {
-  cacheClient.del(cacheKey);
+const afterCreateSuccess = (syncedData, contextName, cacheHandler, shouldFireSocketEvent=false, socketEventName) => {
+    if(typeof cacheHandler === 'function') {
+        cacheHandler('del');
+    }
 
-  if(shouldFireSocketEvent){
-    const updaterSocket = socket.socketClient.connect();
-    socket.socketClient.fireEvent(updaterSocket, socketEventName, synchedData, true);
-  }
+    if(shouldFireSocketEvent){
+        const updaterSocket = socket.socketClient.connect();
+        socket.socketClient.fireEvent(updaterSocket, socketEventName, syncedData, true);
+    };
 
-  return res.status(201)
-            .send(responseHelpers.addSuccess(contextName, synchedData));
+    return responseHelpers.addSuccess(contextName, syncedData);
 };
 
-const afterFetchSuccess = (res, synchedData, contextName, cacheClient, cacheKey) => {
-  const response = responseHelpers.fetchSuccess(contextName, synchedData)
+const afterFetchSuccess = (syncedData, contextName, cacheHandler) => {
+    const response = responseHelpers.fetchSuccess(contextName, syncedData)
+    
+    if(typeof cacheHandler === 'function') {
+        cacheHandler('set', syncedData);
+    }
 
-  if(cacheClient && cacheClient){
-    cacheClient.set(cacheKey, JSON.stringify(response));
-  }
-
-  res.status(200).send(response);
+    return response;
 };
 
-const afterUpdateSuccess = (res, synchedData, contextName, cacheClient, cacheKey, updateType) => {
-  const responseHelperMethod = updateType === 'delete' ? responseHelpers.deleteSuccess : responseHelpers.updateSuccess;
+const afterUpdateSuccess = (syncedData, contextName, cacheHandler, updateType) => {
+    const responseHelperMethod = updateType === 'delete' ? responseHelpers.deleteSuccess : responseHelpers.updateSuccess;
 
-  cacheClient.del(cacheKey);
+    if(typeof cacheHandler === 'function') {
+        cacheHandler('del');
+    }
 
-  return res.status(201)
-            .send(responseHelperMethod(contextName, synchedData));
+    return responseHelperMethod(contextName, syncedData);
 };
 
 

@@ -7,12 +7,10 @@ const { category } = model;
 const contextName = controllerConstants.category.CONTEXTNAME
 
 const getAllCategories = (req, res) => {
-    const cacheClient = req.app.get('cacheClient');
-    const cacheKey = res.locals.cacheKey;
-
     return category.findAll()
                    .then(allCategories =>
-                       helpers.controllerHelpers.afterFetchSuccess(res, allCategories, contextName, cacheClient, cacheKey)
+                       res.status(200)
+                          .send(helpers.controllerHelpers.afterFetchSuccess(allCategories, contextName))
                    ).catch(error =>
                        res.status(400)
                           .send(helpers.responseHelpers.fetchFailure(contextName, error))

@@ -9,7 +9,7 @@ const {
     device_data,
     device,
     category,
-    role
+    role,
 } = model;
 const contextName = controllerConstants.deviceData.CONTEXTNAME;
 const socketEventName = controllerConstants.deviceData.SOCKETEVENT;
@@ -31,36 +31,30 @@ const addDeviceData = (req, res) => {
         initiator_role_id,
     };
 
-  const cacheClient = req.app.get('cacheClient');
-  const cacheKey = res.locals.cacheKey;
-  const shouldFireSocketEvent = true;
+    const shouldFireSocketEvent = true;
 
-  return device_data.create(deviceData)
-                    .then(deviceDataSynced =>
-                        helpers.controllerHelpers.afterCreateSuccess(res, deviceDataSynced, contextName, cacheClient, cacheKey, shouldFireSocketEvent, socketEventName)
-                    ).catch(error =>
-                        res.status(401)
-                           .send(helpers.responseHelpers.addFailure(contextName, error))
-                    );
+    return device_data.create(deviceData)
+                      .then(deviceDataSynced =>
+                          res.status(201)
+                             .send(helpers.controllerHelpers.afterCreateSuccess(deviceDataSynced, contextName, res.locals.cacheHandler, shouldFireSocketEvent, socketEventName))
+                      ).catch(error =>
+                          res.status(401)
+                             .send(helpers.responseHelpers.addFailure(contextName, error))
+                      );
 };
 
 const getAllDeviceData = (req, res) => {
-  const cacheClient = req.app.get('cacheClient');
-  const cacheKey = res.locals.cacheKey;
-
-  return device_data.findAll()
-                    .then(allDeviceData =>
-                        helpers.controllerHelpers.afterFetchSuccess(res, allDeviceData, contextName, cacheClient, cacheKey)
-                    ).catch(error =>
-                        res.status(400)
-                           .send(helpers.responseHelpers.fetchFailure(contextName, error))
-                    );
+    return device_data.findAll()
+                      .then(allDeviceData =>
+                          res.status(200)
+                             .send(helpers.controllerHelpers.afterFetchSuccess(allDeviceData, contextName, res.locals.cacheHandler))
+                      ).catch(error =>
+                          res.status(400)
+                             .send(helpers.responseHelpers.fetchFailure(contextName, error))
+                      );
 };
 
 const getDeviceDataByRole = (req, res) => {
-    const cacheClient = req.app.get('cacheClient');
-    const cacheKey = res.locals.cacheKey;
-
     const roleId = req.params.roleId;
     const query = {
         include: [{
@@ -87,7 +81,8 @@ const getDeviceDataByRole = (req, res) => {
 
     return device_data.findAll(query)
                       .then(allDeviceDataByRole =>
-                          helpers.controllerHelpers.afterFetchSuccess(res, allDeviceDataByRole, contextName, cacheClient, cacheKey)
+                          res.status(200)
+                             .send(helpers.controllerHelpers.afterFetchSuccess(allDeviceDataByRole, contextName, res.locals.cacheHandler))
                       ).catch(error =>
                           res.status(400)
                              .send(helpers.responseHelpers.fetchFailure(contextName, error))
@@ -95,9 +90,6 @@ const getDeviceDataByRole = (req, res) => {
 };
 
 const getDeviceDataByCategory = (req, res) => {
-    const cacheClient = req.app.get('cacheClient');
-    const cacheKey = res.locals.cacheKey;
-
     const categoryId = req.params.categoryId;
     const query = {
         include: [{
@@ -119,7 +111,8 @@ const getDeviceDataByCategory = (req, res) => {
     
     return device_data.findAll(query)
                       .then(allDeviceDataByRole =>
-                          helpers.controllerHelpers.afterFetchSuccess(res, allDeviceDataByRole, contextName, cacheClient, cacheKey)
+                          res.status(200)
+                             .send(helpers.controllerHelpers.afterFetchSuccess(allDeviceDataByRole, contextName, res.locals.cacheHandler))
                       ).catch(error =>
                           res.status(400)
                              .send(helpers.responseHelpers.fetchFailure(contextName, error))

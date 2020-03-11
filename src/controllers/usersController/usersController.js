@@ -21,12 +21,9 @@ const addUser = (req, res) => {
     added_timestamp,
   }
 
-  const cacheClient = req.app.get('cacheClient')
-  const cacheKey = res.locals.cacheKey
-
   return user.create(userData)
              .then(userDataSynced =>
-               helpers.controllerHelpers.afterCreateSuccess(res, userDataSynced, contextName, cacheClient, cacheKey)
+               helpers.controllerHelpers.afterCreateSuccess(userDataSynced, contextName)
              ).catch(error =>
                res.status(401)
                   .send(helpers.responseHelpers.addFailure(contextName, error))
@@ -46,7 +43,7 @@ const loginUser = (req, res) => {
 
   return user.findOne({where: loginCredentials})
                .then(userData =>
-                  helpers.controllerHelpers.afterFetchSuccess(res, userData, contextName)
+                  helpers.controllerHelpers.afterFetchSuccess(userData, contextName)
                ).catch(error =>
                  res.status(400)
                     .send(helpers.responseHelpers.fetchFailure(contextName, error))
@@ -55,8 +52,6 @@ const loginUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const userIdToUpdate = req.params.userId
-  const cacheClient = req.app.get('cacheClient')
-  const cacheKey = helpers.utils.constructString('remove', 'end', `/${userIdToUpdate}`, res.locals.cacheKey)
 
   req.body.updated_timestamp = new Date().toISOString()
 
@@ -64,7 +59,7 @@ const updateUser = (req, res) => {
                .then(targetUser => {
                  targetUser.update(req.body, { fields: Object.keys(req.body) })
                  .then(userDataUpdated =>
-                   helpers.controllerHelpers.afterUpdateSuccess(res, userDataUpdated, contextName, cacheClient, cacheKey, 'update')
+                   helpers.controllerHelpers.afterUpdateSuccess(userDataUpdated, contextName)
                  ).catch(error =>
                    res.status(400)
                       .send(helpers.responseHelpers.updateFailure(contextName, error))
@@ -78,14 +73,12 @@ const updateUser = (req, res) => {
 
 const deleteUser = (req, res) => {
   const userIdToDelete = req.params.userId
-  const cacheClient = req.app.get('cacheClient')
-  const cacheKey = helpers.utils.constructString('remove', 'end', `/${userIdToDelete}`, res.locals.cacheKey)
 
   return user.findByPk(userIdToDelete)
                .then(targetUser => {
                  targetUser.destroy()
                  .then(() =>
-                   helpers.controllerHelpers.afterUpdateSuccess(res, null, contextName, cacheClient, cacheKey, 'delete')
+                   helpers.controllerHelpers.afterUpdateSuccess(null, contextName)
                  ).catch(error =>
                    res.status(400)
                    .send(helpers.responseHelpers.deleteFailure(contextName, error))

@@ -8,36 +8,32 @@ const contextName = controllerConstants.hub.CONTEXTNAME;
 
 const addHub = (req, res) => {
     const {
-    name,
-    user_id,
-    added_timestamp,
+        name,
+        user_id,
+        added_timestamp,
     } = req.body;
 
     const hubData = {
-    name,
-    user_id,
-    added_timestamp,
+        name,
+        user_id,
+        added_timestamp,
     };
-
-    const cacheClient = req.app.get('cacheClient');
-    const cacheKey = res.locals.cacheKey;
 
     return hub.create(hubData)
               .then(hubDataSynced =>
-                  helpers.controllerHelpers.afterCreateSuccess(res, hubDataSynced, contextName, cacheClient, cacheKey)
+                  res.status(201)
+                     .send(helpers.controllerHelpers.afterCreateSuccess(hubDataSynced, contextName, res.locals.cacheHandler))
               ).catch(error =>
-              res.status(401)
-                 .send(helpers.responseHelpers.addFailure(contextName, error))
+                  res.status(401)
+                     .send(helpers.responseHelpers.addFailure(contextName, error))
               );
 };
 
 const getAllHubs = (req, res) => {
-    const cacheClient = req.app.get('cacheClient');
-    const cacheKey = res.locals.cacheKey;
-
     return hub.findAll()
               .then(allHubs =>
-                  helpers.controllerHelpers.afterFetchSuccess(res, allHubs, contextName, cacheClient, cacheKey)
+                  res.status(200)
+                     .send(helpers.controllerHelpers.afterFetchSuccess(allHubs, contextName, res.locals.cacheHandler))
               ).catch(error =>
                   res.status(400)
                      .send(helpers.responseHelpers.fetchFailure(contextName, error))
@@ -46,8 +42,6 @@ const getAllHubs = (req, res) => {
 
 const updateHub = (req, res) => {
     const hubIdToUpdate = req.params.hubId;
-    const cacheClient = req.app.get('cacheClient');
-    const cacheKey = helpers.utils.constructString('remove', 'end', `/${hubIdToUpdate}`, res.locals.cacheKey);
 
     req.body.updated_timestamp = new Date().toISOString();
 
@@ -55,10 +49,11 @@ const updateHub = (req, res) => {
               .then(targetHub => {
                   targetHub.update(req.body, { fields: Object.keys(req.body) })
                            .then(hubDataUpdated =>
-                               helpers.controllerHelpers.afterUpdateSuccess(res, hubDataUpdated, contextName, cacheClient, cacheKey, 'update')
+                               res.status(200)
+                                  .send(helpers.controllerHelpers.afterUpdateSuccess(hubDataUpdated, contextName, res.locals.cacheHandler))
                            ).catch(error =>
-                           res.status(400)
-                               .send(helpers.responseHelpers.updateFailure(contextName, error))
+                               res.status(400)
+                                  .send(helpers.responseHelpers.updateFailure(contextName, error))
                            )
               }).catch(error =>
                   res.status(400)
@@ -68,18 +63,17 @@ const updateHub = (req, res) => {
 
 const deleteHub = (req, res) => {
     const hubIdToDelete = req.params.hubId;
-    const cacheClient = req.app.get('cacheClient');
-    const cacheKey = helpers.utils.constructString('remove', 'end', `/${hubIdToDelete}`, res.locals.cacheKey);
 
     return hub.findByPk(hubIdToDelete)
               .then(targetHub => {
                   targetHub.destroy()
-                              .then(() =>
-                                  helpers.controllerHelpers.afterUpdateSuccess(res, targetHub, contextName, cacheClient, cacheKey, 'delete')
-                              ).catch(error =>
-                                  res.status(400)
-                                     .send(helpers.responseHelpers.deleteFailure(contextName, error))
-                              )
+                           .then(() =>
+                               res.status(200)
+                                  .send(helpers.controllerHelpers.afterUpdateSuccess(targetHub, contextName, res.locals.cacheHandler))
+                           ).catch(error =>
+                               res.status(400)
+                                  .send(helpers.responseHelpers.deleteFailure(contextName, error))
+                           )
               }).catch(error =>
                   res.status(400)
                      .send(helpers.responseHelpers.deleteFailure(contextName, error))
