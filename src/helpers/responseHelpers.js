@@ -30,10 +30,10 @@ const fetchFailure = (contextName, error) => {
     }
 }
 
-const updateSuccess = (contextName, syncedData) => {
+const updateSuccess = (contextName, syncedData, postFix='updated') => {
     return {
         success: true,
-        message: `${contextName} successfully updated`,
+        message: `${contextName} successfully ${postFix}`,
         data: syncedData,
     }
 }
@@ -61,6 +61,14 @@ const deleteFailure = (contextName, error) => {
     }
 }
 
+const tokenVerificationFailure = (error={}, message='Unauthorized token') => {
+    return {
+        success: false,
+        message,
+        error,
+    }
+}
+
 
 export default {
     addSuccess,
@@ -71,4 +79,5 @@ export default {
     updateFailure,
     deleteSuccess,
     deleteFailure,
+    tokenVerificationFailure,
 }
