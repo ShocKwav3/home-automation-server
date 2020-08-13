@@ -91,7 +91,7 @@ const handleToken = async (owner_id, owner_type, contextObject, secret) => {
 
 const refreshToken = async (oldToken) => {
     let tokenDetails = await getTokenFromDb(null, null, oldToken);
-    tokenDetails.expiry_timestamp = '2020-08-13T12:36:50.142Z'; //utils.addHoursToDate(Date.now(), tokenExpiryHour);
+    tokenDetails.expiry_timestamp = utils.addHoursToDate(Date.now(), tokenExpiryHour);
 
     await updateDbToken(tokenDetails, tokenDetails.owner_id, tokenDetails.owner_type);
 
