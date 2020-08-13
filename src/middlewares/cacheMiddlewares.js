@@ -1,38 +1,41 @@
 import helpers from 'src/helpers';
-import _ from 'lodash';
 
 
 const checkApiCache = (req, res, next) => {
-    const cacheClient = req.app.get('cacheClient')
-    const key = req.url;
+    if(!req.url.includes('/users')) {
+        const cacheClient = req.app.get('cacheClient')
+        const key = req.url;
 
-    cacheClient.on('connect', ()=>{
-        console.log('CONNECTED TO REDIS');
-    });
+        cacheClient.on('connect', ()=>{
+            console.log('CONNECTED TO REDIS');
+        });
 
-    res.locals.cacheKey = key;
+        res.locals.cacheKey = key;
 
-    if(req.method === 'GET'){
-        cacheClient.get(key, (err, result) => {
-        if (err == null && result != null) {
-            console.log('FOUND IN CACHE\n\n', result);
+        if(req.method === 'GET'){
+            cacheClient.get(key, (err, result) => {
+                if (err == null && result != null) {
+                    console.log('FOUND IN CACHE\n\n', result);
 
-            res.status(200).send(JSON.parse(result));
+                    res.status(200).send(JSON.parse(result));
+                } else {
+                    console.log('NOT FOUND IN CACHE');
+
+                    next();
+                };
+            });
         } else {
-            console.log('NOT FOUND IN CACHE');
-
             next();
         };
-        });
     } else {
         next();
-    };
+    }
 };
 
 const prepareCacheHandler = (paramToConsider=undefined) => async (req, res, next) => {
     const { cacheClient, cacheKeys } = await helpers.apiCacheHelpers.getCacheClientAndKeys(req, res, req.params[paramToConsider]);
     const cacheHandler = helpers.apiCacheHelpers.handleCache(cacheClient, cacheKeys);
-    
+
     try {
         res.locals.cacheHandler = cacheHandler;
         next();
