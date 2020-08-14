@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(middlewares.cacheMiddlewares.checkApiCache);
+app.use(middlewares.tokenMiddlewares.verifyToken);
 
 app.use('/', routes);
 

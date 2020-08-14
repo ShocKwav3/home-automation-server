@@ -1,9 +1,12 @@
 import bcrypt from 'bcrypt';
+import _ from 'lodash';
 
 import models from 'src/models';
 import helpers from 'src/helpers';
+import tokenHelpers from 'src/helpers/tokenHelpers';
 import { controllerConstants } from 'src/config/constants';
 import { passwordSaltingTimes } from 'src/config/otherConstants';
+import { userSecret } from 'src/config/secrets';
 
 const { user } = models;
 const contextName = controllerConstants.user.CONTEXTNAME;
@@ -29,33 +32,59 @@ const addUser = async (req, res) => {
     return user.create(userData)
                .then(userDataSynced =>
                    res.status(201)
-                      .send(helpers.controllerHelpers.afterCreateSuccess(userDataSynced, contextName))
+                      .send(helpers.responseHelpers.addSuccess(contextName, userDataSynced))
                ).catch(error =>
                    res.status(401)
                       .send(helpers.responseHelpers.addFailure(contextName, error))
                );
 }
 
-const loginUser = async (req, res) => {
+const loginUser = (req, res) => {
     const {
         user_email,
         password,
     } = req.body;
 
-    return user.findOne({where: {email: user_email}})
-               .then(async (userData) => {
-                   const isPasswordCorrect = await bcrypt.compare(password, userData.password)
+    const contextObject = {
+        email: user_email,
+    };
 
-                   if(!isPasswordCorrect) {
-                       return res.status(400)
-                                 .send(helpers.responseHelpers.fetchFailure(contextName, 'Incorrect Password'))
+    const query = {
+        where: contextObject,
+    };
+
+    return user.findOne(query)
+               .then(async (userDetails) => {
+                   if (userDetails) {
+                        const isPasswordCorrect = await bcrypt.compare(password, userDetails.password);
+
+                        if (!isPasswordCorrect) {
+                            return res.status(400)
+                                        .send(helpers.responseHelpers.fetchFailure(contextName, {message: 'Incorrect Password'}));
+                        }
+
+                        const userTokenDetails = await tokenHelpers.handleToken(userDetails.id, contextName, contextObject, userSecret);
+                        const userData = {
+                            id: userDetails.id,
+                            name: userDetails.name,
+                            email: userDetails.email,
+                            added_timestamp: userDetails.added_timestamp,
+                            updated_timestamp: userDetails.updated_timestamp,
+                            token: userTokenDetails.token,
+                            expiry_timestamp: userTokenDetails.expiry_timestamp,
+                        };
+
+                        return res.status(200)
+                                    .send(helpers.responseHelpers.fetchSuccess(contextName, userData))
+                   } else {
+                       throw new Error('No USER exists for provided E-mail');
                    }
-
-                   return res.status(200)
-                             .send(helpers.controllerHelpers.afterFetchSuccess(userData, contextName))
                }).catch(error =>
-                   res.status(400)
+                   {
+                       console.log("HLA HOLA HOLA", error)
+                       res.status(400)
                       .send(helpers.responseHelpers.fetchFailure(contextName, error))
+                   }
                );
 }
 
@@ -69,7 +98,7 @@ const updateUser = (req, res) => {
                    targetUser.update(req.body, { fields: Object.keys(req.body) })
                              .then(userDataUpdated =>
                                  res.status(200)
-                                    .send(helpers.controllerHelpers.afterUpdateSuccess(userDataUpdated, contextName))
+                                    .send(helpers.responseHelpers.updateSuccess(contextName, userDataUpdated))
                    ).catch(error =>
                        res.status(400)
                           .send(helpers.responseHelpers.updateFailure(contextName, error))
@@ -83,20 +112,43 @@ const updateUser = (req, res) => {
 const deleteUser = (req, res) => {
     const userIdToDelete = req.params.userId
 
-    return user.findByPk(userIdToDelete)
-               .then(targetUser =>
-                   targetUser.destroy()
-                             .then(() =>
-                                 res.status(200)
-                                    .send(helpers.controllerHelpers.afterUpdateSuccess(null, contextName))
-                   ).catch(error =>
-                       res.status(400)
-                          .send(helpers.responseHelpers.deleteFailure(contextName, error))
-                   )
+    const contextObject = {
+        id: userIdToDelete,
+    };
+
+    const query = {
+        where: contextObject,
+    };
+
+    return user.destroy(query)
+               .then((numberOfRowsDeleted) =>
+                   res.status(200)
+                      .send(helpers.responseHelpers.updateSuccess(contextName, null))
                ).catch(error =>
                    res.status(400)
                       .send(helpers.responseHelpers.deleteFailure(contextName, error))
                );
+}
+
+const getAllUsers = (req, res) => {
+    return user.findAll()
+               .then(users =>
+                   res.status(200)
+                      .send(helpers.responseHelpers.fetchSuccess(contextName, users))
+               )
+               .catch(error =>
+                   res.status(400)
+                      .send(helpers.responseHelpers.fetchFailure(contextName, error))
+               )
+}
+
+const getRefreshToken = async (req, res) => {
+    const suppliedToken = req.headers.authorization?.split(' ')[1];
+
+    const newToken = await tokenHelpers.refreshToken(suppliedToken);
+
+    res.status(200)
+       .send(helpers.responseHelpers.updateSuccess('Token', newToken, 'refreshed'));
 }
 
 export default {
@@ -104,4 +156,6 @@ export default {
   loginUser,
   updateUser,
   deleteUser,
+  getAllUsers,
+  getRefreshToken,
 }

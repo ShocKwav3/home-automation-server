@@ -5,6 +5,7 @@ import debug from 'debug';
 
 import app from 'src/app';
 import socket from 'src/socket';
+import db from 'src/models';
 
 const debugServer = debug('plant-monitor-server:server');
 const httpServer = http.Server(app);
@@ -23,14 +24,20 @@ const serverCreated = () => {
     console.log(`Server running on port ${port}`);
 }
 
-
 /**
- * Listen on provided port, on all network interfaces.
+ * Check if database connection is ok before initiating server
  */
 
-httpServer.listen(port, serverCreated);
-httpServer.on('error', onError);
-httpServer.on('listening', onListening);
+console.log("Database connection: TRYING ");
+db.sequelize.authenticate()
+            .then(function () {
+                console.log("Database connection: OK ");
+                initiateServer(port);
+            })
+            .catch(function (err) {
+                console.error("Database connection: FAILED ", err)
+                process.exit(1);
+            });
 
 /**
  * Normalize a port into a number, string, or false.
@@ -90,6 +97,15 @@ function onListening() {
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     debugServer('Listening on ' + bind);
+}
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+function initiateServer(port) {
+    httpServer.listen(port, serverCreated);
+    httpServer.on('error', onError);
+    httpServer.on('listening', onListening);
 }
 
 
