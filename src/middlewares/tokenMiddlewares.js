@@ -3,6 +3,7 @@ import _ from 'lodash';
 import models from 'src/models';
 import responseHelpers from 'src/helpers/responseHelpers';
 import tokenHelpers from 'src/helpers/tokenHelpers';
+import  { printLog, logStylers } from 'src/helpers/logHelpers';
 
 
 const verifyToken = (req, res, next) => {
@@ -25,7 +26,7 @@ const verifyToken = (req, res, next) => {
             token.findOne(query)
                  .then((tokenData) => {
                       if (tokenData && (!tokenHelpers.isTokenExpired(tokenData.expiry_timestamp) || (tokenHelpers.isTokenExpired(tokenData.expiry_timestamp) && req.url.includes('/refreshToken') && req.method === 'GET'))) {
-                         console.log("Verified! Token: ", tokenToCheck, tokenData.expiry_timestamp, new Date().toISOString());
+                         log(logStylers.authSuccess('Verified! Token: '), logStylers.values(tokenToCheck), logStylers.values(tokenData.expiry_timestamp), logStylers.values(new Date().toISOString()));
 
                          next();
                      } else {
@@ -33,14 +34,16 @@ const verifyToken = (req, res, next) => {
                      }
                  })
                  .catch(err => {
-                    console.log("Verification failed, unauthorized/non-existing token: ", tokenToCheck);
+                    printLog(logStylers.authFailure(`Verification failed, unauthorized/non-existing token: ${logStylers.values(tokenToCheck)}`));
 
-                    res.status(403).send(responseHelpers.tokenVerificationFailure(err, 'unauthorized/non-existing token'));
+                    res.status(403)
+                       .send(responseHelpers.tokenVerificationFailure(err, 'unauthorized/non-existing token'));
                  });
         } else {
-            console.log("Verification failed, no token supplied: ", tokenToCheck);
+            printLog(logStylers.authFailure(`Verification failed, no token supplied: ${logStylers.values(tokenToCheck)}`))
 
-            res.status(403).send(responseHelpers.tokenVerificationFailure({message: 'No token supplied'}, 'Verification failed, no token supplied'));
+            res.status(403)
+               .send(responseHelpers.tokenVerificationFailure({message: 'No token supplied'}, 'Verification failed, no token supplied'));
         }
     }
 };

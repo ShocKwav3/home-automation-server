@@ -1,6 +1,7 @@
 import model from 'src/models';
 import helpers from 'src/helpers';
 import { controllerConstants } from 'src/config/constants';
+import  { printLog, logStylers } from 'src/helpers/logHelpers';
 
 
 const {
@@ -75,13 +76,17 @@ const updateDevice = (req, res) => {
     return device.findByPk(deviceIdToUpdate)
                  .then(targetDevice =>
                      targetDevice.update(req.body, { fields: Object.keys(req.body) })
-                                 .then(deviceDataUpdated =>
+                                 .then(deviceDataUpdated =>{
+                                     printLog(`${logStylers.genericSuccess('Device successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(targetDevice))} New: ${logStylers.values(JSON.stringify(deviceDataUpdated))}`);
+
                                      res.status(202)
                                         .send(helpers.controllerHelpers.afterUpdateSuccess(deviceDataUpdated, contextName, res.locals.cacheHandler, 'update'))
-                                 ).catch(error =>
+                                 }).catch(error => {
+                                     printLog(logStylers.genericError('Error updating device: '), logStylers.values(JSON.stringify(targetDevice)), error);
+
                                      res.status(402)
                                         .send(helpers.responseHelpers.updateFailure(contextName, error))
-                                 )
+                                 })
                  ).catch(error =>
                     res.status(402)
                        .send(helpers.responseHelpers.updateFailure(contextName, error))
@@ -92,14 +97,16 @@ const deleteDevice = (req, res) => {
     const deviceIdToDelete = req.params.deviceId;
 
     return device.findByPk(deviceIdToDelete)
-                 .then(targetDevice => 
+                 .then(targetDevice =>
                      targetDevice.destroy()
-                                 .then(() =>{
-                                     console.log("SUCESSFULLY DELETED, ", JSON.stringify(targetDevice));
+                                 .then(() => {
+                                     printLog(logStylers.genericSuccess('Device successfully deleted! '), logStylers.values(JSON.stringify(targetDevice)));
+
                                      res.status(203)
                                         .send(helpers.controllerHelpers.afterUpdateSuccess(null, contextName, res.locals.cacheHandler, 'delete'))
-                                 }).catch(error =>{
-                                    console.log("PROBLEM, ", JSON.stringify(targetDevice), JSON.stringify(error), error);
+                                 }).catch(error => {
+                                     printLog(logStylers.genericError('Error deleting device: '), logStylers.values(JSON.stringify(targetDevice)), error);
+
                                      res.status(403)
                                         .send(helpers.responseHelpers.deleteFailure(contextName, error))
                                  })

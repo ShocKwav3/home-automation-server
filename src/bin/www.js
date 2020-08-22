@@ -6,6 +6,7 @@ import debug from 'debug';
 import app from 'src/app';
 import socket from 'src/socket';
 import db from 'src/models';
+import  { printLog, logStylers } from 'src/helpers/logHelpers';
 
 const debugServer = debug('plant-monitor-server:server');
 const httpServer = http.Server(app);
@@ -21,21 +22,21 @@ socketConnection.connection();
  */
 
 const serverCreated = () => {
-    console.log(`Server running on port ${port}`);
+    printLog(logStylers.genericSuccess('Server running on port: '), logStylers.values(port));
 }
 
 /**
  * Check if database connection is ok before initiating server
  */
 
-console.log("Database connection: TRYING ");
+printLog('Database connection status: ', logStylers.genericPending('Connecting...'));
 db.sequelize.authenticate()
             .then(function () {
-                console.log("Database connection: OK ");
+                printLog('Database connection: ', logStylers.genericSuccess('OK'));
                 initiateServer(port);
             })
             .catch(function (err) {
-                console.error("Database connection: FAILED ", err)
+                printLog(logStylers.genericError('Database connection: FAILED'), err)
                 process.exit(1);
             });
 
@@ -75,11 +76,11 @@ function onError(error) {
     // handle specific listen errors with friendly messages
     switch (error.code) {
         case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
+            printLog(logStylers.values(bind), logStylers.genericError(' requires elevated privileges'));
             process.exit(1);
             break;
         case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
+            printLog(logStylers.values(bind), logStylers.genericError(' is already in use'));
             process.exit(1);
             break;
         default:
@@ -96,7 +97,7 @@ function onListening() {
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
-    debugServer('Listening on ' + bind);
+    debugServer(logStylers.genericSuccess('Listening on ') + logStylers.values(bind));
 }
 
 /**

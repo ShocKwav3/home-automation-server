@@ -7,6 +7,8 @@ import tokenHelpers from 'src/helpers/tokenHelpers';
 import { controllerConstants } from 'src/config/constants';
 import { passwordSaltingTimes } from 'src/config/otherConstants';
 import { userSecret } from 'src/config/secrets';
+import  { printLog, logStylers } from 'src/helpers/logHelpers';
+
 
 const { user } = models;
 const contextName = controllerConstants.user.CONTEXTNAME;
@@ -59,8 +61,10 @@ const loginUser = (req, res) => {
                         const isPasswordCorrect = await bcrypt.compare(password, userDetails.password);
 
                         if (!isPasswordCorrect) {
+                            printLog(logStylers.genericFailure('Incorrect password! User email: '), logStylers.values(user_email));
+
                             return res.status(400)
-                                        .send(helpers.responseHelpers.fetchFailure(contextName, {message: 'Incorrect Password'}));
+                                      .send(helpers.responseHelpers.fetchFailure(contextName, {message: 'Incorrect Password'}));
                         }
 
                         const userTokenDetails = await tokenHelpers.handleToken(userDetails.id, contextName, contextObject, userSecret);
@@ -75,17 +79,18 @@ const loginUser = (req, res) => {
                         };
 
                         return res.status(200)
-                                    .send(helpers.responseHelpers.fetchSuccess(contextName, userData))
+                                  .send(helpers.responseHelpers.fetchSuccess(contextName, userData))
                    } else {
+                       printLog(logStylers.genericFailure('User does not exist! User email: '), logStylers.values(user_email));
+
                        throw new Error('No USER exists for provided E-mail');
                    }
-               }).catch(error =>
-                   {
-                       console.log("HLA HOLA HOLA", error)
-                       res.status(400)
+               }).catch(error => {
+                   printLog(logStylers.genericError('Error while finding user for login. User email: '), logStylers.values(user_email));
+
+                   res.status(400)
                       .send(helpers.responseHelpers.fetchFailure(contextName, error))
-                   }
-               );
+               });
 }
 
 const updateUser = (req, res) => {
