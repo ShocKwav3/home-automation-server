@@ -7,12 +7,12 @@ import tokenHelpers from 'src/helpers/tokenHelpers';
 import { controllerConstants } from 'src/config/constants';
 import { passwordSaltingTimes } from 'src/config/otherConstants';
 import { userSecret } from 'src/config/secrets';
-import  { printLog, logStylers } from 'src/helpers/logHelpers';
+import { controllerLog, logStylers } from 'src/helpers/logHelpers';
 
 
 const { user } = models;
 const contextName = controllerConstants.user.CONTEXTNAME;
-
+const userControllerLog = controllerLog(contextName);
 
 const addUser = async (req, res) => {
     const {
@@ -32,13 +32,17 @@ const addUser = async (req, res) => {
     };
 
     return user.create(userData)
-               .then(userDataSynced =>
-                   res.status(201)
-                      .send(helpers.responseHelpers.addSuccess(contextName, userDataSynced))
-               ).catch(error =>
-                   res.status(401)
-                      .send(helpers.responseHelpers.addFailure(contextName, error))
-               );
+               .then(userDataSynced => {
+                   userControllerLog(logStylers.genericSuccess('User created successfully. Values:\n'), logStylers.values(JSON.stringify(userDataSynced)));
+
+                   return res.status(201)
+                             .send(helpers.responseHelpers.addSuccess(contextName, userDataSynced));
+               }).catch(error => {
+                   userControllerLog(logStylers.genericError('Error creating user. Message: '), logStylers.values(error.message), '\n', error.stack);
+
+                   return res.status(401)
+                             .send(helpers.responseHelpers.addFailure(contextName, error.message));
+               });
 }
 
 const loginUser = (req, res) => {
@@ -61,7 +65,7 @@ const loginUser = (req, res) => {
                         const isPasswordCorrect = await bcrypt.compare(password, userDetails.password);
 
                         if (!isPasswordCorrect) {
-                            printLog(logStylers.genericFailure('Incorrect password! User email: '), logStylers.values(user_email));
+                            userControllerLog(logStylers.genericFailure('Incorrect password! User email: '), logStylers.values(user_email));
 
                             return res.status(400)
                                       .send(helpers.responseHelpers.fetchFailure(contextName, {message: 'Incorrect Password'}));
@@ -78,18 +82,20 @@ const loginUser = (req, res) => {
                             expiry_timestamp: userTokenDetails.expiry_timestamp,
                         };
 
+                        userControllerLog(logStylers.genericSuccess('User successfully logged in. User data: '), logStylers.values(JSON.stringify(userData)));
+
                         return res.status(200)
-                                  .send(helpers.responseHelpers.fetchSuccess(contextName, userData))
+                                  .send(helpers.responseHelpers.fetchSuccess(contextName, userData));
                    } else {
-                       printLog(logStylers.genericFailure('User does not exist! User email: '), logStylers.values(user_email));
+                       userControllerLog(logStylers.genericFailure('User does not exist! User email: '), logStylers.values(user_email));
 
                        throw new Error('No USER exists for provided E-mail');
                    }
                }).catch(error => {
-                   printLog(logStylers.genericError('Error while finding user for login. User email: '), logStylers.values(user_email));
+                   userControllerLog(logStylers.genericError('Error while finding user for login. User email: '), logStylers.values(user_email), logStylers.values(error.message), error.stack);
 
-                   res.status(400)
-                      .send(helpers.responseHelpers.fetchFailure(contextName, error))
+                   return res.status(400)
+                             .send(helpers.responseHelpers.fetchFailure(contextName, error.message));
                });
 }
 
@@ -101,17 +107,23 @@ const updateUser = (req, res) => {
     return user.findByPk(userIdToUpdate)
                .then(targetUser =>
                    targetUser.update(req.body, { fields: Object.keys(req.body) })
-                             .then(userDataUpdated =>
-                                 res.status(200)
-                                    .send(helpers.responseHelpers.updateSuccess(contextName, userDataUpdated))
-                   ).catch(error =>
-                       res.status(400)
-                          .send(helpers.responseHelpers.updateFailure(contextName, error))
-                   )
-               ).catch(error =>
+                             .then(userDataUpdated => {
+                                 userControllerLog(`${logStylers.genericSuccess('User successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(targetUser))} New: ${logStylers.values(JSON.stringify(userDataUpdated))}`);
+
+                                 return res.status(200)
+                                           .send(helpers.responseHelpers.updateSuccess(contextName, userDataUpdated));
+                   }).catch(error => {
+                       userControllerLog(logStylers.genericError('Error updating user: '), logStylers.values(JSON.stringify(targetUser)), logStylers.values(error.message), error.stack);
+
+                       return res.status(400)
+                                 .send(helpers.responseHelpers.updateFailure(contextName, error.message));
+                   })
+               ).catch(error => {
+                   userControllerLog(logStylers.genericError('Error updating user (outer): '), logStylers.values(error.message), error.stack);
+
                    res.status(400)
-                      .send(helpers.responseHelpers.updateFailure(contextName, error))
-               );
+                      .send(helpers.responseHelpers.updateFailure(contextName, error.message));
+               });
 }
 
 const deleteUser = (req, res) => {
@@ -126,25 +138,33 @@ const deleteUser = (req, res) => {
     };
 
     return user.destroy(query)
-               .then((numberOfRowsDeleted) =>
-                   res.status(200)
-                      .send(helpers.responseHelpers.updateSuccess(contextName, null))
-               ).catch(error =>
-                   res.status(400)
-                      .send(helpers.responseHelpers.deleteFailure(contextName, error))
-               );
+               .then(() => {
+                   userControllerLog(logStylers.genericSuccess('User successfully deleted! ID: '), logStylers.values(userIdToDelete));
+
+                   return res.status(200)
+                             .send(helpers.responseHelpers.updateSuccess(contextName, null));
+               }).catch(error => {
+                   userControllerLog(logStylers.genericError(`Error deleting user. ID: ${logStylers.values(userIdToDelete)}`), logStylers.values(error.message), error.stack);
+
+                   return res.status(400)
+                             .send(helpers.responseHelpers.deleteFailure(contextName, error.message));
+               });
 }
 
 const getAllUsers = (req, res) => {
     return user.findAll()
-               .then(users =>
-                   res.status(200)
-                      .send(helpers.responseHelpers.fetchSuccess(contextName, users))
-               )
-               .catch(error =>
-                   res.status(400)
-                      .send(helpers.responseHelpers.fetchFailure(contextName, error))
-               )
+               .then(allUsers => {
+                   userControllerLog(logStylers.genericSuccess('Users fetched successfully. Values:\n'), logStylers.values(JSON.stringify(allUsers)));
+
+                   return res.status(200)
+                             .send(helpers.responseHelpers.fetchSuccess(contextName, allUsers));
+               })
+               .catch(error => {
+                   userControllerLog(logStylers.genericError('Error fetching users: '), logStylers.values(error.message), '\n', error.stack);
+
+                   return res.status(400)
+                             .send(helpers.responseHelpers.fetchFailure(contextName, error.message));
+               })
 }
 
 const getRefreshToken = async (req, res) => {
@@ -152,8 +172,10 @@ const getRefreshToken = async (req, res) => {
 
     const newToken = await tokenHelpers.refreshToken(suppliedToken);
 
-    res.status(200)
-       .send(helpers.responseHelpers.updateSuccess('Token', newToken, 'refreshed'));
+    userControllerLog(logStylers.genericSuccess('Token refresh successful. New token: '), logStylers.values(newToken));
+
+    return res.status(200)
+              .send(helpers.responseHelpers.updateSuccess('Token', newToken, 'refreshed'));
 }
 
 export default {

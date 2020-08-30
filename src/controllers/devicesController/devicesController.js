@@ -1,7 +1,7 @@
 import model from 'src/models';
 import helpers from 'src/helpers';
 import { controllerConstants } from 'src/config/constants';
-import  { printLog, logStylers } from 'src/helpers/logHelpers';
+import { controllerLog, logStylers } from 'src/helpers/logHelpers';
 
 
 const {
@@ -12,6 +12,7 @@ const {
     user,
 } = model;
 const contextName = controllerConstants.device.CONTEXTNAME;
+const deviceControllerLog = controllerLog(contextName);
 
 const addDevice = (req, res) => {
     const {
@@ -35,13 +36,17 @@ const addDevice = (req, res) => {
     };
 
     return device.create(deviceData)
-                .then(deviceDataSynced =>
-                    res.status(201)
-                       .send(helpers.controllerHelpers.afterCreateSuccess(deviceDataSynced, contextName, res.locals.cacheHandler))
-                ).catch(error =>
-                    res.status(401)
-                       .send(helpers.responseHelpers.addFailure(contextName, error))
-                );
+                .then(deviceDataSynced => {
+                    deviceControllerLog(logStylers.genericSuccess('Device created successfully. Values:\n'), logStylers.values(JSON.stringify(deviceDataSynced)));
+
+                    return res.status(201)
+                              .send(helpers.controllerHelpers.afterCreateSuccess(deviceDataSynced, contextName, res.locals.cacheHandler))
+                }).catch(error => {
+                    deviceControllerLog(logStylers.genericError('Error creating device. Message: '), logStylers.values(error.message), '\n', error.stack);
+
+                    return res.status(401)
+                              .send(helpers.responseHelpers.addFailure(contextName, error.message))
+                });
 }
 
 const getAllDevices = (req, res) => {
@@ -59,13 +64,17 @@ const getAllDevices = (req, res) => {
     };
 
     return device.findAll(query)
-                 .then(allDevices =>
-                    res.status(200)
-                       .send(helpers.controllerHelpers.afterFetchSuccess(allDevices, contextName, res.locals.cacheHandler))
-                 ).catch(error =>
-                     res.status(400)
-                        .send(helpers.responseHelpers.fetchFailure(contextName, error))
-                 );
+                 .then(allDevices => {
+                     deviceControllerLog(logStylers.genericSuccess('Devices fetched successfully. Values:\n'), logStylers.values(JSON.stringify(allDevices)));
+
+                     return res.status(200)
+                              .send(helpers.controllerHelpers.afterFetchSuccess(allDevices, contextName, res.locals.cacheHandler))
+                 }).catch(error => {
+                     deviceControllerLog(logStylers.genericError('Error fetching devices: '), logStylers.values(error.message), '\n', error.stack);
+
+                     return res.status(400)
+                               .send(helpers.responseHelpers.fetchFailure(contextName, error.message))
+                 });
 }
 
 const updateDevice = (req, res) => {
@@ -77,43 +86,48 @@ const updateDevice = (req, res) => {
                  .then(targetDevice =>
                      targetDevice.update(req.body, { fields: Object.keys(req.body) })
                                  .then(deviceDataUpdated =>{
-                                     printLog(`${logStylers.genericSuccess('Device successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(targetDevice))} New: ${logStylers.values(JSON.stringify(deviceDataUpdated))}`);
+                                     deviceControllerLog(`${logStylers.genericSuccess('Device successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(targetDevice))} New: ${logStylers.values(JSON.stringify(deviceDataUpdated))}`);
 
-                                     res.status(202)
-                                        .send(helpers.controllerHelpers.afterUpdateSuccess(deviceDataUpdated, contextName, res.locals.cacheHandler, 'update'))
+                                     return res.status(202)
+                                               .send(helpers.controllerHelpers.afterUpdateSuccess(deviceDataUpdated, contextName, res.locals.cacheHandler, 'update'))
                                  }).catch(error => {
-                                     printLog(logStylers.genericError('Error updating device: '), logStylers.values(JSON.stringify(targetDevice)), error);
+                                     deviceControllerLog(logStylers.genericError('Error updating device: '), logStylers.values(JSON.stringify(targetDevice)), logStylers.values(error.message), error.stack);
 
-                                     res.status(402)
-                                        .send(helpers.responseHelpers.updateFailure(contextName, error))
+                                     return res.status(402)
+                                               .send(helpers.responseHelpers.updateFailure(contextName, error.message))
                                  })
-                 ).catch(error =>
-                    res.status(402)
-                       .send(helpers.responseHelpers.updateFailure(contextName, error))
-                 );
+                 ).catch(error => {
+                     deviceControllerLog(logStylers.genericError('Error updating device (outer): '), logStylers.values(error.message), error.stack);
+
+                     return res.status(402)
+                              .send(helpers.responseHelpers.updateFailure(contextName, error.message))
+                 });
 }
 
 const deleteDevice = (req, res) => {
     const deviceIdToDelete = req.params.deviceId;
 
-    return device.findByPk(deviceIdToDelete)
-                 .then(targetDevice =>
-                     targetDevice.destroy()
-                                 .then(() => {
-                                     printLog(logStylers.genericSuccess('Device successfully deleted! '), logStylers.values(JSON.stringify(targetDevice)));
+    const contextObject = {
+        id: deviceIdToDelete,
+    };
 
-                                     res.status(203)
-                                        .send(helpers.controllerHelpers.afterUpdateSuccess(null, contextName, res.locals.cacheHandler, 'delete'))
-                                 }).catch(error => {
-                                     printLog(logStylers.genericError('Error deleting device: '), logStylers.values(JSON.stringify(targetDevice)), error);
+    const query = {
+        where: contextObject,
+    };
 
-                                     res.status(403)
-                                        .send(helpers.responseHelpers.deleteFailure(contextName, error))
-                                 })
-                 ).catch(error =>
-                     res.status(403)
-                        .send(helpers.responseHelpers.deleteFailure(contextName, error))
-                 );
+    return device.destroy(query)
+                 .then(() => {
+                     deviceControllerLog(logStylers.genericSuccess('Device successfully deleted! ID: '), logStylers.values(deviceIdToDelete));
+
+                     return res.status(203)
+                               .send(helpers.controllerHelpers.afterUpdateSuccess(null, contextName, res.locals.cacheHandler, 'delete'))
+                 })
+                 .catch((error) => {
+                     deviceControllerLog(logStylers.genericError(`Error deleting device. ID: ${logStylers.values(deviceIdToDelete)} `), logStylers.values(error.message), error.stack);
+
+                     return res.status(403)
+                               .send(helpers.responseHelpers.deleteFailure(contextName, error.message))
+                 });
 }
 
 export default {

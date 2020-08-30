@@ -61,7 +61,7 @@ const deleteFailure = (contextName, error) => {
     }
 }
 
-const tokenVerificationFailure = (error={}, message='Unauthorized token') => {
+const tokenVerificationFailure = (error, message='Unauthorized token') => {
     return {
         success: false,
         message,

@@ -1,3 +1,4 @@
+import debug from 'debug';
 import chalk from 'chalk';
 
 const genericPending = (message) => chalk.blue.underline(message);
@@ -26,3 +27,8 @@ export const logStylers = {
 };
 
 export const printLog = console.log;
+export const serverStatusesLog = debug('HA:serverStatus');
+export const cacheLog = debug('HA:cacheMiddleware');
+export const tokenLog = debug('HA:tokenMiddleware');
+export const socketLog = debug('HA:socketIO');
+export const controllerLog = (controllerContext) => debug(`HA:controllers:${controllerContext}`);

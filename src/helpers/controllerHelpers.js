@@ -16,13 +16,11 @@ const afterCreateSuccess = (syncedData, contextName, cacheHandler, shouldFireSoc
 }
 
 const afterFetchSuccess = (syncedData, contextName, cacheHandler) => {
-    const response = responseHelpers.fetchSuccess(contextName, syncedData);
-    
     if(typeof cacheHandler === 'function') {
         cacheHandler('set', syncedData);
     }
 
-    return response;
+    return responseHelpers.fetchSuccess(contextName, syncedData);;
 }
 
 const afterUpdateSuccess = (syncedData, contextName, cacheHandler, updateType) => {
