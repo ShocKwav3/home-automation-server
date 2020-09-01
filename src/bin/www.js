@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-//DEBUG='HA:serverStatus'
+//DEBUG='HA:serverStatus' check logHelpers.js for more options
 
 import http from 'http';
 
