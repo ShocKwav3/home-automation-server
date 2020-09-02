@@ -52,29 +52,28 @@ const getAllHubs = (req, res) => {
 
 const updateHub = (req, res) => {
     const hubIdToUpdate = req.params.hubId;
+    const query = {
+        fields: Object.keys(req.body),
+        returning: true,
+        where: {
+            id: hubIdToUpdate,
+        },
+    };
 
     req.body.updated_timestamp = new Date().toISOString();
 
-    return hub.findByPk(hubIdToUpdate)
-              .then(targetHub => {
-                  targetHub.update(req.body, { fields: Object.keys(req.body) })
-                           .then(hubDataUpdated => {
-                               hubsControllerLog(`${logStylers.genericSuccess('Hub successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(targetHub))} New: ${logStylers.values(JSON.stringify(hubDataUpdated))}`);
+    return hub.update(req.body, query)
+              .then(hubDataUpdated => {
+                  hubsControllerLog(`${logStylers.genericSuccess('Hub successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(hubDataUpdated[1][0]))}`);
 
-                               return res.status(200)
-                                         .send(helpers.controllerHelpers.afterUpdateSuccess(hubDataUpdated, contextName, res.locals.cacheHandler));
-                           }).catch(error => {
-                               hubsControllerLog(logStylers.genericError('Error updating hub: '), logStylers.values(JSON.stringify(targetHub)), logStylers.values(error.message), error.stack);
-
-                               return res.status(400)
-                                         .send(helpers.responseHelpers.updateFailure(contextName, error.message));
-                           })
+                  return res.status(200)
+                            .send(helpers.controllerHelpers.afterUpdateSuccess(hubDataUpdated[1][0], contextName, res.locals.cacheHandler));
               }).catch(error => {
-                  hubsControllerLog(logStylers.genericError('Error updating hub (outer): '), logStylers.values(error.message), error.stack);
+                  hubsControllerLog(logStylers.genericError('Error updating hub: '), logStylers.values(hubIdToUpdate), logStylers.values(error.message), error.stack);
 
                   return res.status(400)
                             .send(helpers.responseHelpers.updateFailure(contextName, error.message));
-              });
+              })
 }
 
 const deleteHub = (req, res) => {

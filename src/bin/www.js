@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-//DEBUG='HA:serverStatus' check logHelpers.js for more options
+//NOTE: DEBUG='HA:serverStatus' check logHelpers.js for more options
 
 import http from 'http';
 
@@ -67,7 +67,7 @@ function onError(error) {
         ? 'Pipe ' + port
         : 'Port ' + port;
 
-    // handle specific listen errors with friendly messages
+    //NOTE: handle specific listen errors with friendly messages
     switch (error.code) {
         case 'EACCES':
             serverStatusesLog(logStylers.values(bind), logStylers.genericError(' requires elevated privileges'));

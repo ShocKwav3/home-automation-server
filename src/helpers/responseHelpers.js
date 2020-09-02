@@ -14,7 +14,7 @@ const addFailure = (contextName, error) => {
     }
 }
 
-const fetchSuccess = (contextName, syncedData) => {
+const fetchSuccess = (contextName='Data', syncedData) => {
     return {
         success: true,
         message: `${contextName} successfully fetched`,

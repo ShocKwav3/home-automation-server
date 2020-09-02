@@ -79,29 +79,28 @@ const getAllDevices = (req, res) => {
 
 const updateDevice = (req, res) => {
     const deviceIdToUpdate = req.params.deviceId;
+    const query = {
+        fields: Object.keys(req.body),
+        returning: true,
+        where: {
+            id: deviceIdToUpdate,
+        },
+    };
 
     req.body.updated_timestamp = new Date().toISOString();
 
-    return device.findByPk(deviceIdToUpdate)
-                 .then(targetDevice =>
-                     targetDevice.update(req.body, { fields: Object.keys(req.body) })
-                                 .then(deviceDataUpdated =>{
-                                     deviceControllerLog(`${logStylers.genericSuccess('Device successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(targetDevice))} New: ${logStylers.values(JSON.stringify(deviceDataUpdated))}`);
+    return device.update(req.body, query)
+                 .then(deviceDataUpdated =>{
+                     deviceControllerLog(`${logStylers.genericSuccess('Device successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(deviceDataUpdated[1][0]))}`);
 
-                                     return res.status(202)
-                                               .send(helpers.controllerHelpers.afterUpdateSuccess(deviceDataUpdated, contextName, res.locals.cacheHandler, 'update'))
-                                 }).catch(error => {
-                                     deviceControllerLog(logStylers.genericError('Error updating device: '), logStylers.values(JSON.stringify(targetDevice)), logStylers.values(error.message), error.stack);
-
-                                     return res.status(402)
-                                               .send(helpers.responseHelpers.updateFailure(contextName, error.message))
-                                 })
-                 ).catch(error => {
-                     deviceControllerLog(logStylers.genericError('Error updating device (outer): '), logStylers.values(error.message), error.stack);
+                     return res.status(202)
+                               .send(helpers.controllerHelpers.afterUpdateSuccess(deviceDataUpdated[1][0], contextName, res.locals.cacheHandler, 'update'))
+                 }).catch(error => {
+                     deviceControllerLog(logStylers.genericError('Error updating device: '), logStylers.values(JSON.stringify(deviceIdToUpdate)), logStylers.values(error.message), error.stack);
 
                      return res.status(402)
-                              .send(helpers.responseHelpers.updateFailure(contextName, error.message))
-                 });
+                               .send(helpers.responseHelpers.updateFailure(contextName, error.message))
+                 })
 }
 
 const deleteDevice = (req, res) => {

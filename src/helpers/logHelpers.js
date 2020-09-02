@@ -13,7 +13,7 @@ const authFailure = (message) => chalk.bgYellow.red.italic(message);
 
 const authSuccess = (message) => chalk.yellow(message);
 
-const values = (int) => chalk.magentaBright(int);
+const values = (values) => chalk.magentaBright(values);
 
 
 export const logStylers = {

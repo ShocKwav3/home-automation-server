@@ -101,29 +101,28 @@ const loginUser = (req, res) => {
 
 const updateUser = (req, res) => {
     const userIdToUpdate = req.params.userId;
+    const query = {
+        fields: Object.keys(req.body),
+        returning: true,
+        where: {
+            id: userIdToUpdate,
+        },
+    };
 
     req.body.updated_timestamp = new Date().toISOString();
 
-    return user.findByPk(userIdToUpdate)
-               .then(targetUser =>
-                   targetUser.update(req.body, { fields: Object.keys(req.body) })
-                             .then(userDataUpdated => {
-                                 userControllerLog(`${logStylers.genericSuccess('User successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(targetUser))} New: ${logStylers.values(JSON.stringify(userDataUpdated))}`);
+    return targetUser.update(req.body, query)
+                     .then(userDataUpdated => {
+                         userControllerLog(`${logStylers.genericSuccess('User successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(userDataUpdated[1][0]))}`);
 
-                                 return res.status(200)
-                                           .send(helpers.responseHelpers.updateSuccess(contextName, userDataUpdated));
-                   }).catch(error => {
-                       userControllerLog(logStylers.genericError('Error updating user: '), logStylers.values(JSON.stringify(targetUser)), logStylers.values(error.message), error.stack);
+                         return res.status(200)
+                                   .send(helpers.responseHelpers.updateSuccess(contextName, userDataUpdated[1][0]));
+                     }).catch(error => {
+                         userControllerLog(logStylers.genericError('Error updating user: '), logStylers.values(JSON.stringify(userIdToUpdate)), logStylers.values(error.message), error.stack);
 
-                       return res.status(400)
-                                 .send(helpers.responseHelpers.updateFailure(contextName, error.message));
-                   })
-               ).catch(error => {
-                   userControllerLog(logStylers.genericError('Error updating user (outer): '), logStylers.values(error.message), error.stack);
-
-                   res.status(400)
-                      .send(helpers.responseHelpers.updateFailure(contextName, error.message));
-               });
+                         return res.status(400)
+                                   .send(helpers.responseHelpers.updateFailure(contextName, error.message));
+                     })
 }
 
 const deleteUser = (req, res) => {

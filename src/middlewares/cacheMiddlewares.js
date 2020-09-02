@@ -14,7 +14,7 @@ const checkApiCache = (req, res, next) => {
                 if (err == null && result != null) {
                     cacheLog(logStylers.genericSuccess('FOUND IN CACHE'), `for key: ${logStylers.values(key)}\n`, logStylers.values(result));
 
-                    res.status(200).send(JSON.parse(result));
+                    res.status(200).send(helpers.responseHelpers.fetchSuccess(undefined, JSON.parse(result)));
                 } else {
                     cacheLog(logStylers.genericFailure('NOT FOUND IN CACHE'), 'for key: ', logStylers.values(key), '\n');
 
