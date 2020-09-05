@@ -38,10 +38,10 @@ const updateSuccess = (contextName, syncedData, postFix='updated') => {
     }
 }
 
-const updateFailure = (contextName, error) => {
+const updateFailure = (contextName, error, postFix='update') => {
     return {
         success: false,
-        message: `${contextName} failed to update`,
+        message: `${contextName} failed to ${postFix}`,
         error,
     }
 }

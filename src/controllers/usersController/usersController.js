@@ -1,11 +1,9 @@
-import bcrypt from 'bcrypt';
 import _ from 'lodash';
 
 import models from 'src/models';
 import helpers from 'src/helpers';
 import tokenHelpers from 'src/helpers/tokenHelpers';
 import { controllerConstants } from 'src/config/constants';
-import { passwordSaltingTimes } from 'src/config/otherConstants';
 import { userSecret } from 'src/config/secrets';
 import { controllerLog, logStylers } from 'src/helpers/logHelpers';
 
@@ -14,7 +12,7 @@ const { user } = models;
 const contextName = controllerConstants.user.CONTEXTNAME;
 const userControllerLog = controllerLog(contextName);
 
-const addUser = async (req, res) => {
+const addUser = (req, res) => {
     const {
         name,
         email,
@@ -22,12 +20,10 @@ const addUser = async (req, res) => {
         added_timestamp,
     } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, passwordSaltingTimes);
-
     const userData = {
         name,
         email,
-        password: hashedPassword,
+        password,
         added_timestamp,
     };
 
@@ -61,26 +57,16 @@ const loginUser = (req, res) => {
 
     return user.findOne(query)
                .then(async (userDetails) => {
-                   if (userDetails) {
-                        const isPasswordCorrect = await bcrypt.compare(password, userDetails.password);
-
-                        if (!isPasswordCorrect) {
+                   if (!_.isEmpty(userDetails)) {
+                        if (!userDetails.isPasswordCorrect(password)) {
                             userControllerLog(logStylers.genericFailure('Incorrect password! User email: '), logStylers.values(user_email));
 
                             return res.status(400)
                                       .send(helpers.responseHelpers.fetchFailure(contextName, {message: 'Incorrect Password'}));
                         }
 
-                        const userTokenDetails = await tokenHelpers.handleToken(userDetails.id, contextName, contextObject, userSecret);
-                        const userData = {
-                            id: userDetails.id,
-                            name: userDetails.name,
-                            email: userDetails.email,
-                            added_timestamp: userDetails.added_timestamp,
-                            updated_timestamp: userDetails.updated_timestamp,
-                            token: userTokenDetails.token,
-                            expiry_timestamp: userTokenDetails.expiry_timestamp,
-                        };
+                        const userTokenDetails = await tokenHelpers.handleTokenForLogin(userDetails.id, contextName, contextObject, userSecret);
+                        const userData = formatUserData(userDetails, userTokenDetails);
 
                         userControllerLog(logStylers.genericSuccess('User successfully logged in. User data: '), logStylers.values(JSON.stringify(userData)));
 
@@ -111,18 +97,21 @@ const updateUser = (req, res) => {
 
     req.body.updated_timestamp = new Date().toISOString();
 
-    return targetUser.update(req.body, query)
-                     .then(userDataUpdated => {
-                         userControllerLog(`${logStylers.genericSuccess('User successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(userDataUpdated[1][0]))}`);
+    return user.update(req.body, query)
+                 .then(userDataUpdateInformation => {
+                     const [numberOfRowsAffected, updatedUserData] = userDataUpdateInformation;
 
-                         return res.status(200)
-                                   .send(helpers.responseHelpers.updateSuccess(contextName, userDataUpdated[1][0]));
-                     }).catch(error => {
-                         userControllerLog(logStylers.genericError('Error updating user: '), logStylers.values(JSON.stringify(userIdToUpdate)), logStylers.values(error.message), error.stack);
+                     //NOTE: Since this is allowed to update only a single user through the route, the updated user data will always contain a single changed row thus we are using updatedUserData[0];
+                     userControllerLog(`${logStylers.genericSuccess('User successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(updatedUserData[0]))}`);
 
-                         return res.status(400)
-                                   .send(helpers.responseHelpers.updateFailure(contextName, error.message));
-                     })
+                     return res.status(200)
+                               .send(helpers.responseHelpers.updateSuccess(contextName, updatedUserData[0]));
+                 }).catch(error => {
+                     userControllerLog(logStylers.genericError('Error updating user: '), logStylers.values(JSON.stringify(userIdToUpdate)), logStylers.values(error.message), error.stack);
+
+                     return res.status(400)
+                               .send(helpers.responseHelpers.updateFailure(contextName, error.message));
+                 })
 }
 
 const deleteUser = (req, res) => {
@@ -167,14 +156,32 @@ const getAllUsers = (req, res) => {
 }
 
 const getRefreshToken = async (req, res) => {
-    const suppliedToken = req.headers.authorization?.split(' ')[1];
+    try {
+        const suppliedToken = req.headers.authorization?.split(' ')[1];
+        const newToken = await tokenHelpers.refreshToken(suppliedToken);
 
-    const newToken = await tokenHelpers.refreshToken(suppliedToken);
+        userControllerLog(logStylers.genericSuccess('Token refresh successful. New token: '), logStylers.values(newToken));
 
-    userControllerLog(logStylers.genericSuccess('Token refresh successful. New token: '), logStylers.values(newToken));
+        return res.status(200)
+                  .send(helpers.responseHelpers.updateSuccess('Token', newToken, 'refreshed'));
+    } catch (error) {
+        userControllerLog(logStylers.genericFailure('Token refresh failed. Error: '), error.message, error.stack);
 
-    return res.status(200)
-              .send(helpers.responseHelpers.updateSuccess('Token', newToken, 'refreshed'));
+        return res.status(200)
+                  .send(helpers.responseHelpers.updateFailure('Token', 'Internal error', 'refresh'));
+    }
+}
+
+const formatUserData = (userDetails, userTokenDetails) => {
+    return {
+        id: userDetails.id,
+        name: userDetails.name,
+        email: userDetails.email,
+        added_timestamp: userDetails.added_timestamp,
+        updated_timestamp: userDetails.updated_timestamp,
+        token: userTokenDetails.token,
+        expiry_timestamp: userTokenDetails.expiry_timestamp,
+    };
 }
 
 export default {

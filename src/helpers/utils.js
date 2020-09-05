@@ -38,11 +38,13 @@ export const getHoursDifference = (firsDate, secondDate) => {
   const firstMoment = moment(firsDate);
   const secondMoment = moment(secondDate);
   const duration = moment.duration(secondMoment.diff(firstMoment));
-  
+
   return Math.floor(duration.asHours());
 }
 
-export const addHoursToDate = (date, hours) => new Date(date+1000*60*60*hours).toISOString()
+export const addHoursToDate = (date, hours) => new Date(date+1000*60*60*hours).toISOString();
+
+const getTimeNow = () => new Date().toISOString();
 
 export default {
     constructString,
@@ -50,4 +52,5 @@ export default {
     getTimeString,
     getHoursDifference,
     addHoursToDate,
+    getTimeNow,
 }
