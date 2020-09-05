@@ -97,7 +97,7 @@ const updateUser = (req, res) => {
 
     req.body.updated_timestamp = new Date().toISOString();
 
-    return useser.update(req.body, query)
+    return user.update(req.body, query)
                  .then(userDataUpdateInformation => {
                      const [numberOfRowsAffected, updatedUserData] = userDataUpdateInformation;
 

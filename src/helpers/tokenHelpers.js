@@ -18,8 +18,8 @@ const getTokenFromDb = (owner_id, owner_type, tokenToGet) => {
     };
 
     return models.token.findOne(query)
-                .then(tokenData => tokenData)
-                .catch(error => error);
+                       .then(tokenData => tokenData)
+                       .catch(error => error);
 }
 
 const updateDbToken = ({token: tokenValue, expiry_timestamp}, owner_id, owner_type) => {
@@ -33,6 +33,7 @@ const updateDbToken = ({token: tokenValue, expiry_timestamp}, owner_id, owner_ty
 
     const query = {
         fields: Object.keys(tokenRowToUpdate),
+        returning: true,
         where: {
             owner_id,
             owner_type,
@@ -40,7 +41,7 @@ const updateDbToken = ({token: tokenValue, expiry_timestamp}, owner_id, owner_ty
     };
 
     return token.update(tokenRowToUpdate, query)
-                .then(synchedToken => synchedToken)
+                .then(([numberOfAffectedRows, synchedTokenData]) => synchedTokenData[0])
                 .catch(error => error);
 }
 
@@ -99,9 +100,7 @@ const refreshToken = async (oldToken) => {
     let tokenDetails = await getTokenFromDb(null, null, oldToken);
     tokenDetails.expiry_timestamp = utils.addHoursToDate(Date.now(), tokenExpiryHour);
 
-    await updateDbToken(tokenDetails, tokenDetails.owner_id, tokenDetails.owner_type);
-
-    return tokenDetails;
+    return updateDbToken(tokenDetails, tokenDetails.owner_id, tokenDetails.owner_type);
 }
 
 
