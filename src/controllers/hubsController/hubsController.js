@@ -63,11 +63,14 @@ const updateHub = (req, res) => {
     req.body.updated_timestamp = new Date().toISOString();
 
     return hub.update(req.body, query)
-              .then(hubDataUpdated => {
-                  hubsControllerLog(`${logStylers.genericSuccess('Hub successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(hubDataUpdated[1][0]))}`);
+              .then(hubDataUpdateInformation => {
+                  const [numberOfRowsAffected, updatedHubData] = hubDataUpdateInformation;
+
+                  //NOTE: Since this is allowed to update only a single hub through the route, the updated hub data will always contain a single changed row thus we are using updatedHubData[0];
+                  hubsControllerLog(`${logStylers.genericSuccess('Hub successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(updatedHubData[0]))}`);
 
                   return res.status(200)
-                            .send(helpers.controllerHelpers.afterUpdateSuccess(hubDataUpdated[1][0], contextName, res.locals.cacheHandler));
+                            .send(helpers.controllerHelpers.afterUpdateSuccess(updatedHubData[0], contextName, res.locals.cacheHandler));
               }).catch(error => {
                   hubsControllerLog(logStylers.genericError('Error updating hub: '), logStylers.values(hubIdToUpdate), logStylers.values(error.message), error.stack);
 

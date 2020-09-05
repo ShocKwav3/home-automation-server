@@ -90,11 +90,14 @@ const updateDevice = (req, res) => {
     req.body.updated_timestamp = new Date().toISOString();
 
     return device.update(req.body, query)
-                 .then(deviceDataUpdated =>{
-                     deviceControllerLog(`${logStylers.genericSuccess('Device successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(deviceDataUpdated[1][0]))}`);
+                 .then(deviceDataUpdateInformation => {
+                     const [numberOfRowsAffected, updatedDeviceData] = deviceDataUpdateInformation;
+
+                     //NOTE: Since this is allowed to update only a single device through the route, the updated device data will always contain a single changed row thus we are using updatedDeviceData[0];
+                     deviceControllerLog(`${logStylers.genericSuccess('Device successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(updatedDeviceData[0]))}`);
 
                      return res.status(202)
-                               .send(helpers.controllerHelpers.afterUpdateSuccess(deviceDataUpdated[1][0], contextName, res.locals.cacheHandler, 'update'))
+                               .send(helpers.controllerHelpers.afterUpdateSuccess(updatedDeviceData[0], contextName, res.locals.cacheHandler, 'update'))
                  }).catch(error => {
                      deviceControllerLog(logStylers.genericError('Error updating device: '), logStylers.values(JSON.stringify(deviceIdToUpdate)), logStylers.values(error.message), error.stack);
 

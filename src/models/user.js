@@ -1,5 +1,8 @@
 'use strict';
 
+import bcrypt from 'bcrypt';
+import { passwordSaltingTimes } from 'src/config/otherConstants';
+
 
 module.exports = (sequelize, DataTypes) => {
   const user = sequelize.define('user', {
@@ -41,8 +44,17 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   }, {
-    timestamps: false
+    timestamps: false,
+    hooks: {
+      beforeCreate: function(user, options) {
+        user.password = bcrypt.hashSync(user.password, passwordSaltingTimes);
+      },
+    },
   });
+
+  user.prototype.isPasswordCorrect = function(password) {
+    return bcrypt.compareSync(password, this.password);
+  }
 
   user.associate = function(models) {
     user.hasMany(models.hub, {

@@ -65,28 +65,34 @@ const generateToken = (contextObject, secret, expiryHour = tokenExpiryHour) => (
 
 const isTokenExpired = (tokenExpiryTimestamp) => utils.getHoursDifference(tokenExpiryTimestamp, new Date().toISOString()) >= 0;
 
-const handleToken = async (owner_id, owner_type, contextObject, secret) => {
+const handleTokenForLogin = async (owner_id, owner_type, contextObject, secret) => {
     let tokenDetails = await getTokenFromDb(owner_id, owner_type) || {};
+    const timeNow = utils.getTimeNow();
 
     if (_.isEmpty(tokenDetails)) {
-        tokenDetails.toBeInserted = true;
+        tokenDetails = {
+            ...generateToken(contextObject, secret),
+            owner_id,
+            owner_type,
+            added_timestamp: timeNow,
+        };
     } else if(isTokenExpired(tokenDetails.expiry_timestamp)) {
-        tokenDetails.toBeUpdated = true;
+        tokenDetails = {
+            ...tokenDetails.toJSON(),
+            updated_timestamp: new Date().toISOString(),
+            expiry_timestamp: utils.addHoursToDate(Date.now(), tokenExpiryHour),
+        };
+    } else {
+        return tokenDetails;
     }
 
-    if (tokenDetails.toBeUpdated || tokenDetails.toBeInserted) {
-        const newToken = generateToken(contextObject, secret);
-        tokenDetails.token = newToken.token;
-        tokenDetails.expiry_timestamp = newToken.expiry_timestamp;
-
-        if(tokenDetails.toBeUpdated) {
-            await updateDbToken(tokenDetails, owner_id, owner_type);
-        } else if (tokenDetails.toBeInserted) {
-            await addTokenToDb(tokenDetails, owner_id, owner_type);
-        }
-    }
-
-    return tokenDetails;
+    return token.upsert(tokenDetails, {fields: ['updated_timestamp', 'expiry_timestamp']})
+                .then(whateverData => ({
+                    token: tokenDetails.token,
+                    expiry_timestamp: tokenDetails.expiry_timestamp,
+                    ...(tokenDetails.updated_timestamp && {updated_timestamp: tokenDetails.updated_timestamp}),
+                }))
+                .catch(error => error);
 }
 
 const refreshToken = async (oldToken) => {
@@ -101,6 +107,6 @@ const refreshToken = async (oldToken) => {
 
 export default {
     isTokenExpired,
-    handleToken,
+    handleTokenForLogin,
     refreshToken,
 }
