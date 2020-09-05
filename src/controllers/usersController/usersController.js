@@ -156,14 +156,8 @@ const getAllUsers = (req, res) => {
 }
 
 const getRefreshToken = async (req, res) => {
-    const suppliedToken = req.headers.authorization?.split(' ')[1];
-
-    if(!suppliedToken) {
-        return res.status(400)
-                  .send(helpers.responseHelpers.updateFailure('Token', 'No token supplied', 'refresh'))
-    }
-
     try {
+        const suppliedToken = req.headers.authorization?.split(' ')[1];
         const newToken = await tokenHelpers.refreshToken(suppliedToken);
 
         userControllerLog(logStylers.genericSuccess('Token refresh successful. New token: '), logStylers.values(newToken));
