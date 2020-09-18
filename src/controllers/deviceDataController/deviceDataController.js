@@ -17,20 +17,12 @@ const socketEventName = controllerConstants.deviceData.SOCKETEVENT;
 const deviceDataControllerLog = controllerLog(contextName);
 
 const addDeviceData = (req, res) => {
-    const {
-        created_timestamp,
-        device_id,
-        device_value,
-        initiator_id,
-        initiator_role_id,
-    } = req.body;
-
     const deviceData = {
-        created_timestamp,
-        device_id,
-        device_value,
-        initiator_id,
-        initiator_role_id,
+        created_timestamp: req.body.created_timestamp,
+        device_id: req.body.created_timestamp,
+        device_value: req.body.created_timestamp,
+        initiator_id: req.body.created_timestamp,
+        initiator_role_id: req.body.created_timestamp,
     };
 
     const shouldFireSocketEvent = true;

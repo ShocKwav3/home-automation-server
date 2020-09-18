@@ -47,22 +47,24 @@ const getAllBoards = (req, res) => {
 
 const updateBoard = (req, res) => {
     const boardIdToUpdate = req.params.boardId;
+    const requestedChanges = {
+        ...req.body,
+        updated_timestamp: new Date().toISOString(),
+    }
     const query = {
-        fields: Object.keys(req.body),
+        fields: Object.keys(requestedChanges),
         returning: true,
         where: {
             id: boardIdToUpdate,
         },
     };
 
-    req.body.updated_timestamp = new Date().toISOString();
-
-    return board.update(req.body, query)
+    return board.update(requestedChanges, query)
                 .then(boardDataUpdateInformation => {
                     const [numberOfRowsAffected, updatedBoardData] = boardDataUpdateInformation;
 
                     //NOTE: Since this is allowed to update only a single board through the route, the updated board data will always contain a single changed row thus we are using updatedDeviceData[0];
-                    boardControllerLog(`${logStylers.genericSuccess('Board successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(updatedBoardData[0]))}`);
+                    boardControllerLog(`${logStylers.genericSuccess('Board successfully updated! ')}, Incoming: ${logStylers.values(JSON.stringify(req.body))} After change: ${logStylers.values(JSON.stringify(updatedBoardData[0]))}`);
 
                     return res.status(202)
                               .send(helpers.controllerHelpers.afterUpdateSuccess(updatedBoardData[0], contextName, res.locals.cacheHandler, 'update'))
@@ -76,13 +78,10 @@ const updateBoard = (req, res) => {
 
 const deleteBoard = (req, res) => {
     const boardIdToDelete = req.params.boardId;
-
-    const contextObject = {
-        id: boardIdToDelete,
-    };
-
     const query = {
-        where: contextObject,
+        where: {
+            id: boardIdToDelete,
+        },
     };
 
     return board.destroy(query)

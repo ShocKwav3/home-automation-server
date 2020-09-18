@@ -9,16 +9,10 @@ const contextName = controllerConstants.hub.CONTEXTNAME;
 const hubsControllerLog = controllerLog(contextName);
 
 const addHub = (req, res) => {
-    const {
-        name,
-        user_id,
-        added_timestamp,
-    } = req.body;
-
     const hubData = {
-        name,
-        user_id,
-        added_timestamp,
+        name: req.body.name,
+        user_id: req.body.user_id,
+        added_timestamp: req.body.added_timestamp,
     };
 
     return hub.create(hubData)
@@ -52,22 +46,24 @@ const getAllHubs = (req, res) => {
 
 const updateHub = (req, res) => {
     const hubIdToUpdate = req.params.hubId;
+    const requestedChanges = {
+        ...req.body,
+        updated_timestamp: new Date().toISOString(),
+    }
     const query = {
-        fields: Object.keys(req.body),
+        fields: Object.keys(requestedChanges),
         returning: true,
         where: {
             id: hubIdToUpdate,
         },
     };
 
-    req.body.updated_timestamp = new Date().toISOString();
-
-    return hub.update(req.body, query)
+    return hub.update(requestedChanges, query)
               .then(hubDataUpdateInformation => {
                   const [numberOfRowsAffected, updatedHubData] = hubDataUpdateInformation;
 
                   //NOTE: Since this is allowed to update only a single hub through the route, the updated hub data will always contain a single changed row thus we are using updatedHubData[0];
-                  hubsControllerLog(`${logStylers.genericSuccess('Hub successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(updatedHubData[0]))}`);
+                  hubsControllerLog(`${logStylers.genericSuccess('Hub successfully updated! ')}, Incoming: ${logStylers.values(JSON.stringify(req.body))} After change: ${logStylers.values(JSON.stringify(updatedHubData[0]))}`);
 
                   return res.status(200)
                             .send(helpers.controllerHelpers.afterUpdateSuccess(updatedHubData[0], contextName, res.locals.cacheHandler));
@@ -81,28 +77,24 @@ const updateHub = (req, res) => {
 
 const deleteHub = (req, res) => {
     const hubIdToDelete = req.params.hubId;
-
-    const contextObject = {
-        id: hubIdToDelete,
-    };
-
     const query = {
-        where: contextObject,
+        where: {
+            id: hubIdToDelete,
+        },
     };
 
     return hub.destroy(query)
-                 .then(() => {
-                     hubsControllerLog(logStylers.genericSuccess('Hub successfully deleted! ID: '), logStylers.values(hubIdToDelete));
+              .then(() => {
+                  hubsControllerLog(logStylers.genericSuccess('Hub successfully deleted! ID: '), logStylers.values(hubIdToDelete));
 
-                     return res.status(203)
-                               .send(helpers.controllerHelpers.afterUpdateSuccess(null, contextName, res.locals.cacheHandler, 'delete'))
-                 })
-                 .catch((error) => {
-                     hubsControllerLog(logStylers.genericError(`Error deleting hub. ID: ${logStylers.values(hubIdToDelete)} `), logStylers.values(error.message), error.stack);
+                  return res.status(203)
+                            .send(helpers.controllerHelpers.afterUpdateSuccess(null, contextName, res.locals.cacheHandler, 'delete'))
+              }).catch((error) => {
+                  hubsControllerLog(logStylers.genericError(`Error deleting hub. ID: ${logStylers.values(hubIdToDelete)} `), logStylers.values(error.message), error.stack);
 
-                     return res.status(403)
-                               .send(helpers.responseHelpers.deleteFailure(contextName, error.message))
-                 });
+                  return res.status(403)
+                            .send(helpers.responseHelpers.deleteFailure(contextName, error.message))
+              });
 }
 
 export default {

@@ -13,18 +13,11 @@ const contextName = controllerConstants.user.CONTEXTNAME;
 const userControllerLog = controllerLog(contextName);
 
 const addUser = (req, res) => {
-    const {
-        name,
-        email,
-        password,
-        added_timestamp,
-    } = req.body;
-
     const userData = {
-        name,
-        email,
-        password,
-        added_timestamp,
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        added_timestamp: req.body.added_timestamp,
     };
 
     return user.create(userData)
@@ -87,22 +80,24 @@ const loginUser = (req, res) => {
 
 const updateUser = (req, res) => {
     const userIdToUpdate = req.params.userId;
+    const requestedChanges = {
+        ...req.body,
+        updated_timestamp: new Date().toISOString(),
+    }
     const query = {
-        fields: Object.keys(req.body),
+        fields: Object.keys(requestedChanges),
         returning: true,
         where: {
             id: userIdToUpdate,
         },
     };
 
-    req.body.updated_timestamp = new Date().toISOString();
-
-    return user.update(req.body, query)
+    return user.update(requestedChanges, query)
                  .then(userDataUpdateInformation => {
                      const [numberOfRowsAffected, updatedUserData] = userDataUpdateInformation;
 
                      //NOTE: Since this is allowed to update only a single user through the route, the updated user data will always contain a single changed row thus we are using updatedUserData[0];
-                     userControllerLog(`${logStylers.genericSuccess('User successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(updatedUserData[0]))}`);
+                     userControllerLog(`${logStylers.genericSuccess('User successfully updated! ')}, Incoming: ${logStylers.values(JSON.stringify(req.body))} After change: ${logStylers.values(JSON.stringify(updatedUserData[0]))}`);
 
                      return res.status(200)
                                .send(helpers.responseHelpers.updateSuccess(contextName, updatedUserData[0]));
@@ -116,13 +111,10 @@ const updateUser = (req, res) => {
 
 const deleteUser = (req, res) => {
     const userIdToDelete = req.params.userId
-
-    const contextObject = {
-        id: userIdToDelete,
-    };
-
     const query = {
-        where: contextObject,
+        where: {
+            id: userIdToDelete,
+        },
     };
 
     return user.destroy(query)
