@@ -4,6 +4,8 @@ import usersController from './usersController';
 import rolesController from './rolesController';
 import hubsController from './hubsController';
 import categoriesController from './categoriesController';
+import boardsController from './boardsController';
+import hubProfilesController from './hubProfilesController';
 
 
 const controllers = {
@@ -13,6 +15,8 @@ const controllers = {
   rolesController,
   hubsController,
   categoriesController,
+  boardsController,
+  hubProfilesController,
 };
 
 

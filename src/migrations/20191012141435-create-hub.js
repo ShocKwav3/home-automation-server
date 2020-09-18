@@ -22,6 +22,26 @@ module.exports = {
           key: 'id',
         },
       },
+      board_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'boards',
+          key: 'id',
+        },
+      },
+      hub_profile_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'hub_profiles',
+          key: 'id',
+        },
+      },
+      hub_profile_settings: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
       added_timestamp: {
         allowNull: true,
         type: Sequelize.DATE
