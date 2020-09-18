@@ -6,7 +6,7 @@ import utils from './utils';
 
 
 const connect = (host='127.0.0.1', port=6379) => (
-  redis.createClient(port, host)
+    redis.createClient(port, host)
 )
 
 const getCacheClientAndKeys = async (req, res, cacheKeyPostFix, postFixOperation='remove') => {
@@ -18,7 +18,7 @@ const getCacheClientAndKeys = async (req, res, cacheKeyPostFix, postFixOperation
     if(_.isEmpty(cacheKeys)) {
         cacheKeys = [cacheKeyPrefix];
     }
-    
+
     return {
         cacheClient,
         cacheKeys,

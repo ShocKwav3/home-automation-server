@@ -62,3 +62,6 @@ typings/
 
 # sequelize config
 src/config/configdb.js
+
+# secrets config
+src/config/secrets.js

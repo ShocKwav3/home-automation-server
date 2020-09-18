@@ -1,36 +1,38 @@
 #!/usr/bin/env node
+//NOTE: DEBUG='HA:serverStatus' check logHelpers.js for more options
 
 import http from 'http';
-import debug from 'debug';
 
 import app from 'src/app';
 import socket from 'src/socket';
+import db from 'src/models';
+import helpers from 'src/helpers';
+import  { serverStatusesLog, logStylers } from 'src/helpers/logHelpers';
 
-const debugServer = debug('plant-monitor-server:server');
+
 const httpServer = http.Server(app);
 const port = normalizePort(process.env.PORT || '3000');
 
-app.set('port', port);
-
+/**
+ * Initiate socket
+ */
 const socketConnection = new socket.socketServer(httpServer, port);
 socketConnection.connection();
 
 /**
- * Create HTTP server.
+ * Connect/reconnect/error logic for redis
  */
+const cacheClient = helpers.apiCacheHelpers.connect(process.env.REDIS_HOST)
+cacheClient.on('error', function (error) {
+    serverStatusesLog('Redis connection: ', logStylers.genericError('Failed\n'), error.message, logStylers.values('Retrying...'));
+})
 
-const serverCreated = () => {
-    console.log(`Server running on port ${port}`);
-}
+cacheClient.on('connect', function () {
+    serverStatusesLog('Redis connection: ', logStylers.genericSuccess('Connected'));
+})
 
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-httpServer.listen(port, serverCreated);
-httpServer.on('error', onError);
-httpServer.on('listening', onListening);
+app.set('cacheClient', cacheClient);
+app.set('port', port);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -65,14 +67,14 @@ function onError(error) {
         ? 'Pipe ' + port
         : 'Port ' + port;
 
-    // handle specific listen errors with friendly messages
+    //NOTE: handle specific listen errors with friendly messages
     switch (error.code) {
         case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
+            serverStatusesLog(logStylers.values(bind), logStylers.genericError(' requires elevated privileges'));
             process.exit(1);
             break;
         case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
+            serverStatusesLog(logStylers.values(bind), logStylers.genericError(' is already in use'));
             process.exit(1);
             break;
         default:
@@ -89,8 +91,41 @@ function onListening() {
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
-    debugServer('Listening on ' + bind);
+    serverStatusesLog(logStylers.genericSuccess('Debug server listening on ') + logStylers.values(bind));
 }
+
+/**
+ * Runs after server is created
+ */
+
+const afterServerCreated = () => {
+    serverStatusesLog(logStylers.genericSuccess('Server running on port: '), logStylers.values(port));
+}
+
+/**
+ * Create server listening on provided port, on all network interfaces.
+ */
+function initiateServer(port) {
+    httpServer.listen(port, afterServerCreated);
+    httpServer.on('error', onError);
+    httpServer.on('listening', onListening);
+}
+
+/**
+ * Check database connection status
+ */
+serverStatusesLog('Database connection status: ', logStylers.genericPending('Checking...'));
+db.sequelize.authenticate()
+            .then(function (){
+                serverStatusesLog('Database connection: ', logStylers.genericSuccess('OK'));
+
+                initiateServer(port);
+            })
+            .catch(function (error) {
+                serverStatusesLog(logStylers.genericError('Database connection: FAILED'), error.message, '\nExiting...')
+
+                process.exit(1);
+            })
 
 
 export default httpServer;

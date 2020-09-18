@@ -14,7 +14,7 @@ const addFailure = (contextName, error) => {
     }
 }
 
-const fetchSuccess = (contextName, syncedData) => {
+const fetchSuccess = (contextName='Data', syncedData) => {
     return {
         success: true,
         message: `${contextName} successfully fetched`,
@@ -30,18 +30,18 @@ const fetchFailure = (contextName, error) => {
     }
 }
 
-const updateSuccess = (contextName, syncedData) => {
+const updateSuccess = (contextName, syncedData, postFix='updated') => {
     return {
         success: true,
-        message: `${contextName} successfully updated`,
+        message: `${contextName} successfully ${postFix}`,
         data: syncedData,
     }
 }
 
-const updateFailure = (contextName, error) => {
+const updateFailure = (contextName, error, postFix='update') => {
     return {
         success: false,
-        message: `${contextName} failed to update`,
+        message: `${contextName} failed to ${postFix}`,
         error,
     }
 }
@@ -61,6 +61,14 @@ const deleteFailure = (contextName, error) => {
     }
 }
 
+const tokenVerificationFailure = (error, message='Unauthorized token') => {
+    return {
+        success: false,
+        message,
+        error,
+    }
+}
+
 
 export default {
     addSuccess,
@@ -71,4 +79,5 @@ export default {
     updateFailure,
     deleteSuccess,
     deleteFailure,
+    tokenVerificationFailure,
 }
