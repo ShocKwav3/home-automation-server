@@ -18,4 +18,10 @@ export const controllerConstants = {
     category: {
         CONTEXTNAME: 'category',
     },
+    board: {
+        CONTEXTNAME: 'board',
+    },
+    hub_profile: {
+        CONTEXTNAME: 'hub_profile',
+    },
 }
