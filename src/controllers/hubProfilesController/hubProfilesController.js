@@ -46,22 +46,24 @@ const getAllHubProfiles = (req, res) => {
 
 const updateHubProfile = (req, res) => {
     const hubProfileIdToUpdate = req.params.hubProfileId;
+    const requestedChanges = {
+        ...req.body,
+        updated_timestamp: new Date().toISOString(),
+    }
     const query = {
-        fields: Object.keys(req.body),
+        fields: Object.keys(requestedChanges),
         returning: true,
         where: {
             id: hubProfileIdToUpdate,
         },
     };
 
-    req.body.updated_timestamp = new Date().toISOString();
-
-    return hub_profile.update(req.body, query)
+    return hub_profile.update(requestedChanges, query)
                       .then(hubProfileDataUpdateInformation => {
                           const [numberOfRowsAffected, updatedHubProfileData] = hubProfileDataUpdateInformation;
 
                           //NOTE: Since this is allowed to update only a single hub profile through the route, the updated hub profile data will always contain a single changed row thus we are using updatedDeviceData[0];
-                          hubProfileControllerLog(`${logStylers.genericSuccess('Hub profile successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(updatedHubProfileData[0]))}`);
+                          hubProfileControllerLog(`${logStylers.genericSuccess('Hub profile successfully updated! ')}, Incoming: ${logStylers.values(JSON.stringify(req.body))} After change: ${logStylers.values(JSON.stringify(updatedHubProfileData[0]))}`);
 
                           return res.status(202)
                                     .send(helpers.controllerHelpers.afterUpdateSuccess(updatedHubProfileData[0], contextName, res.locals.cacheHandler, 'update'))
@@ -75,13 +77,10 @@ const updateHubProfile = (req, res) => {
 
 const deleteHubProfile = (req, res) => {
     const hubProfileIdToDelete = req.params.hubProfileId;
-
-    const contextObject = {
-        id: hubProfileIdToDelete,
-    };
-
     const query = {
-        where: contextObject,
+        where: {
+            id: hubProfileIdToDelete,
+        },
     };
 
     return hub_profile.destroy(query)

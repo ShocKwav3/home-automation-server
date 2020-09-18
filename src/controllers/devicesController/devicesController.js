@@ -15,24 +15,14 @@ const contextName = controllerConstants.device.CONTEXTNAME;
 const deviceControllerLog = controllerLog(contextName);
 
 const addDevice = (req, res) => {
-    const {
-        name,
-        hub_id,
-        category_id,
-        io_pin,
-        added_timestamp,
-        min_value,
-        max_value,
-    } = req.body;
-
     const deviceData = {
-        name,
-        hub_id,
-        category_id,
-        io_pin,
-        added_timestamp,
-        min_value,
-        max_value,
+        name: req.body.name,
+        hub_id: req.body.hub_id,
+        category_id: req.body.category_id,
+        io_pin: req.body.io_pin,
+        added_timestamp: req.body.added_timestamp,
+        min_value: req.body.min_value,
+        max_value: req.body.max_value,
     };
 
     return device.create(deviceData)
@@ -79,22 +69,24 @@ const getAllDevices = (req, res) => {
 
 const updateDevice = (req, res) => {
     const deviceIdToUpdate = req.params.deviceId;
+    const requestedChanges = {
+        ...req.body,
+        updated_timestamp: new Date().toISOString(),
+    }
     const query = {
-        fields: Object.keys(req.body),
+        fields: Object.keys(requestedChanges),
         returning: true,
         where: {
             id: deviceIdToUpdate,
         },
     };
 
-    req.body.updated_timestamp = new Date().toISOString();
-
-    return device.update(req.body, query)
+    return device.update(requestedChanges, query)
                  .then(deviceDataUpdateInformation => {
                      const [numberOfRowsAffected, updatedDeviceData] = deviceDataUpdateInformation;
 
                      //NOTE: Since this is allowed to update only a single device through the route, the updated device data will always contain a single changed row thus we are using updatedDeviceData[0];
-                     deviceControllerLog(`${logStylers.genericSuccess('Device successfully updated! ')}, Old: ${logStylers.values(JSON.stringify(req.body))} New: ${logStylers.values(JSON.stringify(updatedDeviceData[0]))}`);
+                     deviceControllerLog(`${logStylers.genericSuccess('Device successfully updated! ')}, Incoming: ${logStylers.values(JSON.stringify(req.body))} After change: ${logStylers.values(JSON.stringify(updatedDeviceData[0]))}`);
 
                      return res.status(202)
                                .send(helpers.controllerHelpers.afterUpdateSuccess(updatedDeviceData[0], contextName, res.locals.cacheHandler, 'update'))
@@ -108,13 +100,10 @@ const updateDevice = (req, res) => {
 
 const deleteDevice = (req, res) => {
     const deviceIdToDelete = req.params.deviceId;
-
-    const contextObject = {
-        id: deviceIdToDelete,
-    };
-
     const query = {
-        where: contextObject,
+        where: {
+            id: deviceIdToDelete,
+        },
     };
 
     return device.destroy(query)
