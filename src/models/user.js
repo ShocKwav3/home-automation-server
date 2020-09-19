@@ -60,6 +60,9 @@ module.exports = (sequelize, DataTypes) => {
     user.hasMany(models.hub, {
       foreignKey: 'id',
     });
+    user.hasMany(models.board, {
+      foreignKey: 'id',
+    });
   };
 
   return user;

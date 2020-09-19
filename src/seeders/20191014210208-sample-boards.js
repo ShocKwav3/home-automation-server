@@ -5,6 +5,7 @@ module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('boards', [
             {
+                user_id: 1,
                 board_id: 'board1',
                 board_name: 'photon_one',
                 board_user_token: 'boardTokenLalala',
