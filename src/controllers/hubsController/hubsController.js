@@ -4,7 +4,7 @@ import { controllerConstants } from 'src/config/constants';
 import { controllerLog, logStylers } from 'src/helpers/logHelpers';
 
 
-const { hub } = model;
+const { hub, board, device } = model;
 const contextName = controllerConstants.hub.CONTEXTNAME;
 const hubsControllerLog = controllerLog(contextName);
 
@@ -30,7 +30,19 @@ const addHub = (req, res) => {
 }
 
 const getAllHubs = (req, res) => {
-    return hub.findAll()
+    const query = {
+        include: [{
+            model: board,
+            attributes: ['id', 'board_name'],
+            required: true,
+        },{
+            model: device,
+            attributes: ['id', 'name'],
+            required: true,
+        }],
+    };
+
+    return hub.findAll(query)
               .then(allHubs => {
                   hubsControllerLog(logStylers.genericSuccess('Hubs fetched successfully. Values:\n'), logStylers.values(JSON.stringify(allHubs)));
 
