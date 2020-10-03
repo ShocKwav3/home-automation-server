@@ -10,6 +10,7 @@ const boardControllerLog = controllerLog(contextName);
 
 const addBoard = (req, res) => {
     const boardData = {
+        user_id: req.body.user_id,
         board_id: req.body.board_id,
         board_name: req.body.board_name,
         board_user_token: req.body.board_user_token,
