@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start dev",
+            "type": "shell",
+            "command": "make devServerUp",
+            "group": "build",
+            "presentation": {
+                "reveal" : "always",
+                "panel": "new"
+            }
+        },
+    ]
+}

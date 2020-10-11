@@ -17,5 +17,6 @@
         "src": "./src"
       }
     }]
-  ]
+  ],
+  "sourceMaps": "inline"
 }
