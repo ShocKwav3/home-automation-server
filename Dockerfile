@@ -1,5 +1,7 @@
-FROM node:10-alpine
-WORKDIR /apps/home_automation_server_p
-COPY . /apps/home_automation_server_p/
+FROM node:12
+WORKDIR /usr/src/app/home_automation_server
+COPY package*.json ./
 RUN yarn install
-RUN yarn build
+COPY . .
+
+#RUN yarn build
