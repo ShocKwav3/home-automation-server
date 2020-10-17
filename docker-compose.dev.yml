@@ -30,6 +30,7 @@ services:
     env_file:
       - ./server.env
       - ./database.env
+      - ./development.env
     command: ["sh", "entrypoint.sh", "run"]
     tty: true
 networks:

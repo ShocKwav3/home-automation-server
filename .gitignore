@@ -64,3 +64,7 @@ server.env
 
 # sequelize config
 src/config/configdb.js
+
+# tsl certificate and key
+server.cert
+server.key
