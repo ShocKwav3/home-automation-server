@@ -46,6 +46,8 @@ export const addHoursToDate = (date, hours) => new Date(date+1000*60*60*hours).t
 
 const getTimeNow = () => new Date().toISOString();
 
+const getEpochToIsoDate = (epochTimestamp) => new Date(0).setUTCSeconds(epochTimestamp).toISOString();
+
 export default {
     constructString,
     getDateString,
@@ -53,4 +55,5 @@ export default {
     getHoursDifference,
     addHoursToDate,
     getTimeNow,
+    getEpochToIsoDate,
 }

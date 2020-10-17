@@ -4,7 +4,6 @@ import models from 'src/models';
 import helpers from 'src/helpers';
 import tokenHelpers from 'src/helpers/tokenHelpers';
 import { controllerConstants } from 'src/config/constants';
-import { userSecret } from 'src/config/secrets';
 import { controllerLog, logStylers } from 'src/helpers/logHelpers';
 
 
@@ -50,26 +49,26 @@ const loginUser = (req, res) => {
 
     return user.findOne(query)
                .then(async (userDetails) => {
-                   if (!_.isEmpty(userDetails)) {
-                        if (!userDetails.isPasswordCorrect(password)) {
-                            userControllerLog(logStylers.genericFailure('Incorrect password! User email: '), logStylers.values(user_email));
-
-                            return res.status(400)
-                                      .send(helpers.responseHelpers.fetchFailure(contextName, {message: 'Incorrect Password'}));
-                        }
-
-                        const userTokenDetails = await tokenHelpers.handleTokenForLogin(userDetails.id, contextName, contextObject, userSecret);
-                        const userData = formatUserData(userDetails, userTokenDetails);
-
-                        userControllerLog(logStylers.genericSuccess('User successfully logged in. User data: '), logStylers.values(JSON.stringify(userData)));
-
-                        return res.status(200)
-                                  .send(helpers.responseHelpers.fetchSuccess(contextName, userData));
-                   } else {
+                   if (_.isEmpty(userDetails)) {
                        userControllerLog(logStylers.genericFailure('User does not exist! User email: '), logStylers.values(user_email));
 
                        throw new Error('No USER exists for provided E-mail');
                    }
+
+                   if (!userDetails.isPasswordCorrect(password)) {
+                       userControllerLog(logStylers.genericFailure('Incorrect password! User email: '), logStylers.values(user_email));
+
+                       return res.status(400)
+                                  .send(helpers.responseHelpers.fetchFailure(contextName, {message: 'Incorrect Password'}));
+                   }
+
+                   const userTokenDetails = await tokenHelpers.handleTokenForLogin(userDetails.id, contextName, contextObject, process.env.TOKEN_SECRET);
+                   const userData = formatUserData(userDetails, userTokenDetails);
+
+                   userControllerLog(logStylers.genericSuccess('User successfully logged in. User data: '), logStylers.values(JSON.stringify(userData)));
+
+                   return res.status(200)
+                             .send(helpers.responseHelpers.fetchSuccess(contextName, userData));
                }).catch(error => {
                    userControllerLog(logStylers.genericError('Error while finding user for login. User email: '), logStylers.values(user_email), logStylers.values(error.message), error.stack);
 
