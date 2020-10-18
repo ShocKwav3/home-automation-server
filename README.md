@@ -28,7 +28,7 @@ There are couple of things needed to be setup before running the server locally.
     - SSH to the server container `docker exec -it <container id/name> /bin/sh`
     - Run `yarn dbMigrateAll`/`yarn dbSeedAll`
 - For debugging with VSCode, after the containers are running, click `Debug: HA Dev server` and the debugger should attach
-- It is better to untrack a file when local specific change has been made, to avoid mistakenly commit. Eg. git `update-index --assume-unchanged database.env`
+- It is better to untrack a file when local specific change has been made, to avoid mistakenly commit. Eg. `git update-index --assume-unchanged database.env`
 - To see data from postgres database,
   - Run `yarn console`
     - Run using env variables with proper value while running the command
