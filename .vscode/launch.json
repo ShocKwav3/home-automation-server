@@ -14,10 +14,11 @@
       "address": "localhost",
       "localRoot": "${workspaceFolder}/src",
       "remoteRoot": "/usr/src/app/home_automation_server/src",
-      "sourceMapPathOverrides": {
+      /*"sourceMapPathOverrides": {  //not necessary
         "/usr/src/app/src/*": "${workspaceFolder}/home_automation_server/src/*"
-      },
+      },*/
       "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
         "/usr/src/app/home_automation_server/node_modules/**/*.js",
         "<node_internals>/**/*.js"
       ],

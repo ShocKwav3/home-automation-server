@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 //NOTE: DEBUG='HA:serverStatus' check logHelpers.js for more options
 
-import http from 'http';
+import https from 'https';
+import fs from 'fs';
 
 import app from 'src/app';
 import socket from 'src/socket';
@@ -10,13 +11,16 @@ import helpers from 'src/helpers';
 import  { serverStatusesLog, logStylers } from 'src/helpers/logHelpers';
 
 
-const httpServer = http.Server(app);
+const httpsServer = https.Server({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert'),
+}, app);
 const port = normalizePort(process.env.PORT || '3000');
 
 /**
  * Initiate socket
  */
-const socketConnection = new socket.socketServer(httpServer, port);
+const socketConnection = new socket.socketServer(httpsServer, port);
 socketConnection.connection();
 
 /**
@@ -87,7 +91,7 @@ function onError(error) {
  */
 
 function onListening() {
-    var addr = httpServer.address();
+    var addr = httpsServer.address();
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
@@ -106,9 +110,9 @@ const afterServerCreated = () => {
  * Create server listening on provided port, on all network interfaces.
  */
 function initiateServer(port) {
-    httpServer.listen(port, afterServerCreated);
-    httpServer.on('error', onError);
-    httpServer.on('listening', onListening);
+    httpsServer.listen(port, afterServerCreated);
+    httpsServer.on('error', onError);
+    httpsServer.on('listening', onListening);
 }
 
 /**
@@ -128,4 +132,4 @@ db.sequelize.authenticate()
             })
 
 
-export default httpServer;
+export default httpsServer;
