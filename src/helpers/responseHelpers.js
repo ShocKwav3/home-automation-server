@@ -69,6 +69,13 @@ const tokenVerificationFailure = (error, message='Unauthorized token') => {
     }
 }
 
+const rateLimiterFailure = (message) => {
+    return {
+        success: false,
+        message,
+    }
+}
+
 
 export default {
     addSuccess,
@@ -80,4 +87,5 @@ export default {
     deleteSuccess,
     deleteFailure,
     tokenVerificationFailure,
+    rateLimiterFailure,
 }

@@ -8,3 +8,5 @@ devServerDown:
 	docker-compose down
 cleanDist:
 	rm -rf dist/
+sshToDev:
+	docker exec -it home-automation-server_$(destination)_1 /bin/sh

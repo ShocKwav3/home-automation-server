@@ -25,18 +25,18 @@ There are couple of things needed to be setup before running the server locally.
     - Start the server by uncommenting `yarn dbMigrateAll`/`yarn dbSeedAll`, Only once, in `entrypoint.sh`
     - Okay to comment it out afterwards
   - Do it in the running container
-    - SSH to the server container `docker exec -it <container id/name> /bin/sh`
+    - SSH to the server container `docker exec -it <container id/name> /bin/sh` or `make sshToDev destination=target_container` Put appropriate value for `target_container` one of `server`, `redis` and `db`
     - Run `yarn dbMigrateAll`/`yarn dbSeedAll`
 - For debugging with VSCode, after the containers are running, click `Debug: HA Dev server` and the debugger should attach
 - It is better to untrack a file when local specific change has been made, to avoid mistakenly commit. Eg. `git update-index --assume-unchanged database.env`
 - To see data from postgres database,
   - Run `yarn console`
     - Run using env variables with proper value while running the command
-    - `DB_HOST=localhost POSTGRES_DB=home_automation_dev POSTGRES_USER= POSTGRES_PASSWORD= ./node_modules/.bin/babel-node --experimental-repl-await ./console`
+    - `DB_HOST=localhost POSTGRES_DB=home_automation_dev POSTGRES_USER= POSTGRES_PASSWORD= ./node_modules/.bin/babel-node --experimental-repl-await ./console` <- provide appropriate/dev server usage values to `POSTGRES_USER` and `POSTGRES_PASSWORD`
     - Type `.help` to see available command aliases
     - Run any `sequelize` query. Make sure to wrap the query with `printResult` Eg. `printResult(await user.findAll())`
     - The aim is have rails like experience to see data. WIP
- 
+
  ## Attributes
  - Powered by `express`
  - Designed close to MC
@@ -53,9 +53,9 @@ There are couple of things needed to be setup before running the server locally.
    - Using right values, debug/prod logs can be narrowed down to context
  - Secured
    - Makes use of `helmet`
-   - Rate limiter
+   - Rate limiter using `rate-limiter-flexible`
    - HTTPS. Self signed TLS certificate for development
-   
+
  ## End-points
  - /api
    - /v1
