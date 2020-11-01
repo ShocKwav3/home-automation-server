@@ -20,7 +20,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(helmet());
 
-app.use(middlewares.forceHttpsMiddleware.forceHttps)
+app.use(middlewares.forceHttpsMiddleware.forceHttps);
+app.use(middlewares.rateLimiterMiddleware.rateLimiter);
 app.use(middlewares.tokenMiddlewares.verifyToken);
 app.use(middlewares.cacheMiddlewares.checkApiCache);
 

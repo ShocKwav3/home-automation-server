@@ -3,7 +3,7 @@ import { cacheLog, logStylers } from 'src/helpers/logHelpers';
 
 
 const checkApiCache = (req, res, next) => {
-    if(!req.url.includes('/users')) {
+    if(!req.url.startsWith('rateLimiterKey_') && !req.url.includes('/users')) {
         const cacheClient = req.app.get('cacheClient')
         const key = req.url;
 

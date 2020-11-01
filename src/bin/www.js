@@ -3,12 +3,14 @@
 
 import https from 'https';
 import fs from 'fs';
+import { RateLimiterRedis } from 'rate-limiter-flexible';
 
 import app from 'src/app';
 import socket from 'src/socket';
 import db from 'src/models';
 import helpers from 'src/helpers';
 import  { serverStatusesLog, logStylers } from 'src/helpers/logHelpers';
+import { rateLimiterConfig } from 'src/config/rateLimiterConfig';
 
 
 const httpsServer = https.Server({
@@ -35,8 +37,11 @@ cacheClient.on('connect', function () {
     serverStatusesLog('Redis connection: ', logStylers.genericSuccess('Connected'));
 })
 
+const rateLimiter = new RateLimiterRedis({...rateLimiterConfig, storeClient: cacheClient});
+
 app.set('cacheClient', cacheClient);
 app.set('port', port);
+app.set('rateLimiter', rateLimiter);
 
 /**
  * Normalize a port into a number, string, or false.

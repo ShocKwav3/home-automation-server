@@ -30,5 +30,6 @@ export const printLog = console.log;
 export const serverStatusesLog = debug('HA:serverStatus');
 export const cacheLog = debug('HA:cacheMiddleware');
 export const tokenLog = debug('HA:tokenMiddleware');
+export const rateLimiterLog = debug('HA:rateLimiterMiddleware');
 export const socketLog = debug('HA:socketIO');
 export const controllerLog = (controllerContext) => debug(`HA:controllers:${controllerContext}`);
