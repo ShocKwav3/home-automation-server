@@ -1,22 +1,30 @@
 {
-  "presets": [
-    [
-      "@babel/preset-env",{
-        "targets": {
-          "node": "current"
-        }
-      }
-    ]
-  ],
-  "plugins": [
-    "@babel/plugin-proposal-class-properties",
-    ["module-resolver", {
-      "root": ["./"],
-      "alias": {
-        "projectRoot": "./",
-        "src": "./src"
-      }
-    }]
-  ],
-  "sourceMaps": "inline"
+    "env": {
+        "development": {
+            "presets": [
+                [
+                    "@babel/preset-env", {
+                        "targets": {
+                            "node": "current"
+                        }
+                    }
+                ]
+            ],
+            "plugins": [
+                "@babel/plugin-proposal-class-properties",
+                [
+                    "module-resolver", {
+                        "root": ["./"],
+                        "alias": {
+                            "projectRoot": "./",
+                            "src": "./src"
+                        }
+                    }
+                ]
+            ],
+            "sourceMaps": "inline"
+        },
+        "production": {},
+        "test": {}
+    }
 }
