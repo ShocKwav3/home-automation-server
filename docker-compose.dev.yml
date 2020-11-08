@@ -18,6 +18,7 @@ services:
     image: home_automation_server
     volumes:
       - .:/usr/src/app/home_automation_server
+      - nodemodules:/usr/src/app/home_automation_server/node_modules
     working_dir: /usr/src/app/home_automation_server
     ports:
       - 3000:3000
@@ -31,10 +32,14 @@ services:
       - ./server.env
       - ./database.env
       - ./development.env
-    command: ["sh", "entrypoint.sh", "run"]
+    command: bash -c "
+      /usr/src/app/home_automation_server/wait-for-it.sh db:5432
+      && /usr/src/app/home_automation_server/wait-for-it.sh redis:6379
+      && sh /usr/src/app/home_automation_server/entrypoint.sh"
     tty: true
 networks:
   servernet:
-#volumes:
+volumes:
+  nodemodules:
   #db_data:
     #external: true
