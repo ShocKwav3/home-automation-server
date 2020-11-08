@@ -1,6 +1,6 @@
 setup:
 	docker volume create db_data
-buildServer:
+buildDevServer:
 	docker build -t home_automation_server .
 devServerUp:
 	docker-compose -f docker-compose.dev.yml up

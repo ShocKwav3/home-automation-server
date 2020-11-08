@@ -16,7 +16,7 @@ There are couple of things needed to be setup before running the server locally.
 - Set values for `POSTGRES_USER` and `POSTGRES_PASSWORD` in `database.env`
 - Set `TOKEN_SECRET` in `development.env`
 - Generate self-signed TLS certificate and key. Eg. `openssl req -nodes -new -x509 -keyout server.key -out server.cert`
-- Build docker image for server `make buildServer`
+- Build docker image for server `make buildDevServer`
 - Run the server by `make devServerUp` or from VSCode run task `Start dev`
 
 ### Tips & Tricks
