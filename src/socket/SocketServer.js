@@ -1,8 +1,8 @@
 import socketIO from 'socket.io';
-import  { socketLog, logStylers } from 'src/helpers/logHelpers';
+import { socketLog, logStylers } from 'src/helpers/logHelpers';
 
 
-class socketServer {
+class SocketServer {
     constructor(httpServer, port) {
         this.io = socketIO(httpServer);
 
@@ -12,7 +12,7 @@ class socketServer {
     onNewDeviceData = (data, nextTask) => {
         this.io.emit('newDeviceDataForClient', data);
 
-        if(nextTask) nextTask();
+        if (nextTask) nextTask();
     }
 
     onDisconnect = () => {
@@ -33,4 +33,4 @@ class socketServer {
 }
 
 
-export default socketServer;
+export default SocketServer;

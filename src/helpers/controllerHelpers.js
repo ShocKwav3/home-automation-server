@@ -2,40 +2,40 @@ import socket from 'src/socket';
 import responseHelpers from './responseHelpers';
 
 
-const afterCreateSuccess = (syncedData, contextName, cacheHandler, shouldFireSocketEvent=false, socketEventName) => {
-    if(typeof cacheHandler === 'function') {
+const afterCreateSuccess = (syncedData, contextName, cacheHandler, shouldFireSocketEvent = false, socketEventName) => {
+    if (typeof cacheHandler === 'function') {
         cacheHandler('del');
     }
 
-    if(shouldFireSocketEvent){
+    if (shouldFireSocketEvent) {
         const updaterSocket = socket.socketClient.connect();
         socket.socketClient.fireEvent(updaterSocket, socketEventName, syncedData, true);
-    };
+    }
 
     return responseHelpers.addSuccess(contextName, syncedData);
-}
+};
 
 const afterFetchSuccess = (syncedData, contextName, cacheHandler) => {
-    if(typeof cacheHandler === 'function') {
+    if (typeof cacheHandler === 'function') {
         cacheHandler('set', syncedData);
     }
 
-    return responseHelpers.fetchSuccess(contextName, syncedData);;
-}
+    return responseHelpers.fetchSuccess(contextName, syncedData);
+};
 
 const afterUpdateSuccess = (syncedData, contextName, cacheHandler, updateType) => {
     const responseHelperMethod = updateType === 'delete' ? responseHelpers.deleteSuccess : responseHelpers.updateSuccess;
 
-    if(typeof cacheHandler === 'function') {
+    if (typeof cacheHandler === 'function') {
         cacheHandler('del');
     }
 
     return responseHelperMethod(contextName, syncedData);
-}
+};
 
 
 export default {
-  afterCreateSuccess,
-  afterFetchSuccess,
-  afterUpdateSuccess,
-}
+    afterCreateSuccess,
+    afterFetchSuccess,
+    afterUpdateSuccess,
+};

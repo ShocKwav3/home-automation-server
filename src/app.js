@@ -9,8 +9,8 @@ import middlewares from 'src/middlewares';
 
 const app = express();
 
-//NOTE: 1st logger for request, 2nd one for after response is returned
-app.use(logger('[:date[iso]] :method :url', {immediate: true}));
+// NOTE: 1st logger for request, 2nd one for after response is returned
+app.use(logger('[:date[iso]] :method :url', { immediate: true }));
 app.use(logger('[:date[iso]] :method :url :status :response-time ms'));
 
 app.use(express.json());

@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-unused-vars */
 
 
 module.exports = {
@@ -8,12 +8,12 @@ module.exports = {
                 name: 'profileOne',
                 settings: 'settingsINJsonHere',
                 added_timestamp: '2020-06-28T18:30:52.011Z',
-                updated_timestamp: null
-            }
+                updated_timestamp: null,
+            },
         ], {});
     },
 
     down: (queryInterface, Sequelize) => {
         return queryInterface.bulkDelete('hub_profiles', null, {});
-    }
-}
+    },
+};

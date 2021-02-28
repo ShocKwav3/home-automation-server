@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-unused-vars */
 
 
 module.exports = {
@@ -10,12 +10,12 @@ module.exports = {
                 board_name: 'photon_one',
                 board_user_token: 'boardTokenLalala',
                 added_timestamp: '2020-06-28T18:30:52.011Z',
-                updated_timestamp: null
-            }
+                updated_timestamp: null,
+            },
         ], {});
     },
 
     down: (queryInterface, Sequelize) => {
         return queryInterface.bulkDelete('boards', null, {});
-    }
-}
+    },
+};

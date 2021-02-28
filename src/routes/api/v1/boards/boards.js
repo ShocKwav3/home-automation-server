@@ -4,7 +4,7 @@ import controllers from 'src/controllers';
 import middlewares from 'src/middlewares';
 
 
-let router = express.Router();
+const router = express.Router();
 
 router.put('/:boardId', middlewares.cacheMiddlewares.prepareCacheHandler('boardId'), controllers.boardsController.updateBoard);
 

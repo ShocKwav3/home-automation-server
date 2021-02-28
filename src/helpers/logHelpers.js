@@ -1,3 +1,6 @@
+/* eslint-disable no-console */
+
+
 import debug from 'debug';
 import chalk from 'chalk';
 
@@ -13,7 +16,7 @@ const authFailure = (message) => chalk.bgYellow.red.italic(message);
 
 const authSuccess = (message) => chalk.yellow(message);
 
-const values = (values) => chalk.magentaBright(values);
+const values = (valuesToApplyStyle) => chalk.magentaBright(valuesToApplyStyle);
 
 
 export const logStylers = {

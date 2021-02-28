@@ -9,14 +9,14 @@ import hubProfilesController from './hubProfilesController';
 
 
 const controllers = {
-  deviceDataController,
-  devicesController,
-  usersController,
-  rolesController,
-  hubsController,
-  categoriesController,
-  boardsController,
-  hubProfilesController,
+    deviceDataController,
+    devicesController,
+    usersController,
+    rolesController,
+    hubsController,
+    categoriesController,
+    boardsController,
+    hubProfilesController,
 };
 
 

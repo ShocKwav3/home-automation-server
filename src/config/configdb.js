@@ -5,7 +5,7 @@ module.exports = {
         database: process.env.POSTGRES_DB,
         host: process.env.DB_HOST,
         dialect: 'postgres',
-        logging: msg => require('debug')('HA:database')(msg),
+        logging: (msg) => require('debug')('HA:database')(msg),
     },
     test: {
         username: '',
@@ -13,7 +13,7 @@ module.exports = {
         database: '',
         host: '',
         dialect: '',
-        logging: msg => require('debug')('HA:database')(msg),
+        logging: (msg) => require('debug')('HA:database')(msg),
     },
     production: {
         username: process.env.POSTGRES_USER,
@@ -21,15 +21,15 @@ module.exports = {
         database: process.env.POSTGRES_DB,
         host: process.env.DB_HOST,
         dialect: 'postgres',
-        logging: msg => require('debug')('HA:database')(msg),
-    }
-}
+        logging: (msg) => require('debug')('HA:database')(msg),
+    },
+};
 
-//linux
+// linux
 // sudo ntfsfix /dev/sda5
 
-//mac
-//when pg wont let you connect
+// mac
+// when pg wont let you connect
 // sudo rm /usr/local/var/postgres/postmaster.pid
 // brew services restart postgresql
 
