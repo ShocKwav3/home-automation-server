@@ -1,7 +1,7 @@
 'use strict';
 
 import bcrypt from 'bcrypt';
-import { passwordSaltingTimes } from 'src/config/otherConstants';
+import constants from 'src/config/constants';
 
 
 module.exports = (sequelize, DataTypes) => {
@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false,
     hooks: {
       beforeCreate: function(user, options) {
-        user.password = bcrypt.hashSync(user.password, passwordSaltingTimes);
+        user.password = bcrypt.hashSync(user.password, constants.passwordSaltingTimes);
       },
     },
   });

@@ -4,7 +4,7 @@ import controllers from 'src/controllers';
 import middlewares from 'src/middlewares';
 
 
-let router = express.Router();
+const router = express.Router();
 
 router.get('/', middlewares.cacheMiddlewares.prepareCacheHandler(), controllers.devicesController.getAllDevices);
 

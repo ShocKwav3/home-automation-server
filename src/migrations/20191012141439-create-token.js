@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-unused-vars */
 
 
 module.exports = {
@@ -25,20 +25,20 @@ module.exports = {
             },
             expiry_timestamp: {
                 allowNull: false,
-                type: Sequelize.DATE
+                type: Sequelize.DATE,
             },
             added_timestamp: {
                 allowNull: true,
-                type: Sequelize.DATE
+                type: Sequelize.DATE,
             },
             updated_timestamp: {
                 allowNull: true,
-                type: Sequelize.DATE
+                type: Sequelize.DATE,
             },
         });
     },
 
     down: (queryInterface, Sequelize) => {
         return queryInterface.dropTable('tokens');
-    }
-}
+    },
+};

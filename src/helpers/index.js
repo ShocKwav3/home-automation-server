@@ -11,4 +11,4 @@ export default {
     controllerHelpers,
     utils,
     dbHelpers,
-}
+};

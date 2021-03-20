@@ -10,7 +10,7 @@ import boards from './boards';
 import hubProfiles from './hubProfiles';
 
 
-let router = express.Router();
+const router = express.Router();
 
 router.use('/deviceData', deviceData);
 router.use('/devices', devices);
