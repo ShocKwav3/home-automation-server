@@ -30,7 +30,7 @@
     "pg": "^8.2.1",
     "pg-hstore": "^2.3.3",
     "rate-limiter-flexible": "^2.1.13",
-    "redis": "^2.8.0",
+    "redis": "^3.1.1",
     "sequelize": "^5.21.13",
     "sequelize-cli": "^5.5.0",
     "socket.io": "^2.2.0",
