@@ -1,8 +1,8 @@
 import socketClient from './socketClient';
-import socketServer from './socketServer';
+import SocketServer from './SocketServer';
 
 
 export default {
     socketClient,
-    socketServer,
-}
+    SocketServer,
+};

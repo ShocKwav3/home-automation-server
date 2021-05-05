@@ -3,71 +3,78 @@ const addSuccess = (contextName, syncedData) => {
         success: true,
         message: `${contextName} successfully added`,
         data: syncedData,
-    }
-}
+    };
+};
 
 const addFailure = (contextName, error) => {
     return {
         success: false,
         message: `${contextName} failed to add`,
         error,
-    }
-}
+    };
+};
 
-const fetchSuccess = (contextName='Data', syncedData) => {
+const fetchSuccess = (contextName = 'Data', syncedData) => {
     return {
         success: true,
         message: `${contextName} successfully fetched`,
         data: syncedData,
-    }
-}
+    };
+};
 
 const fetchFailure = (contextName, error) => {
     return {
         success: false,
         message: `${contextName} failed to fetch`,
         error,
-    }
-}
+    };
+};
 
-const updateSuccess = (contextName, syncedData, postFix='updated') => {
+const updateSuccess = (contextName, syncedData, postFix = 'updated') => {
     return {
         success: true,
         message: `${contextName} successfully ${postFix}`,
         data: syncedData,
-    }
-}
+    };
+};
 
-const updateFailure = (contextName, error, postFix='update') => {
+const updateFailure = (contextName, error, postFix = 'update') => {
     return {
         success: false,
         message: `${contextName} failed to ${postFix}`,
         error,
-    }
-}
+    };
+};
 
 const deleteSuccess = (contextName) => {
     return {
         success: true,
         message: `${contextName} successfully deleted`,
-    }
-}
+    };
+};
 
 const deleteFailure = (contextName, error) => {
     return {
         success: false,
         message: `${contextName} failed to delete`,
         error,
-    }
-}
+    };
+};
 
-const tokenVerificationFailure = (error, message='Unauthorized token') => {
+const tokenVerificationFailure = (error, message = 'Unauthorized token') => {
     return {
         success: false,
         message,
         error,
-    }
-}
+    };
+};
+
+const rateLimiterFailure = (message) => {
+    return {
+        success: false,
+        message,
+    };
+};
 
 
 export default {
@@ -80,4 +87,5 @@ export default {
     deleteSuccess,
     deleteFailure,
     tokenVerificationFailure,
-}
+    rateLimiterFailure,
+};

@@ -1,4 +1,4 @@
-export const controllerConstants = {
+const controllerConstants = {
     deviceData: {
         CONTEXTNAME: 'Device Data',
         SOCKETEVENT: 'newDeviceData',
@@ -24,4 +24,13 @@ export const controllerConstants = {
     hub_profile: {
         CONTEXTNAME: 'hub_profile',
     },
-}
+};
+
+const passwordSaltingTimes = 10;
+const tokenExpiryHour = 1;
+
+export default {
+    controllerConstants,
+    passwordSaltingTimes,
+    tokenExpiryHour,
+};

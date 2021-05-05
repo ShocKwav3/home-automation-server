@@ -1,12 +1,12 @@
 setup:
-	docker volume create nodemodules
-buildServer:
+	docker volume create db_data
+buildDevServer:
 	docker build -t home_automation_server .
-	#docker-compose -f docker-compose.builder.yml run --rm install
-serverUp:
-	docker-compose up
-serverDown:
+devServerUp:
+	docker-compose -f docker-compose.dev.yml up
+devServerDown:
 	docker-compose down
 cleanDist:
 	rm -rf dist/
-	
+sshToDev:
+	docker exec -it home-automation-server_$(destination)_1 /bin/sh

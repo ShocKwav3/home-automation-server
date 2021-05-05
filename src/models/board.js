@@ -1,8 +1,22 @@
 'use strict';
 
 
+import user from './user';
+
+
 module.exports = (sequelize, DataTypes) => {
   const board = sequelize.define('board', {
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: {
+        args: false,
+        msg: 'Please specify user id',
+      },
+      references: {
+        model: user,
+        key: 'id',
+      },
+    },
     board_id: {
         type: DataTypes.STRING,
         allowNull: {
@@ -42,6 +56,9 @@ module.exports = (sequelize, DataTypes) => {
 
   board.associate = function(models) {
     board.hasOne(models.hub, {
+      foreignKey: 'id',
+    });
+    board.hasOne(models.user, {
       foreignKey: 'id',
     });
   };

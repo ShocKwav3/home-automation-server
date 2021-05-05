@@ -1,0 +1,45 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    networks:
+      - servernet
+  db:
+    image: postgres
+    networks:
+      - servernet
+    env_file:
+      - ./database.env
+    #volumes:
+      #- db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  server:
+    image: home_automation_server
+    volumes:
+      - .:/usr/src/app/home_automation_server
+      - nodemodules:/usr/src/app/home_automation_server/node_modules
+    working_dir: /usr/src/app/home_automation_server
+    ports:
+      - 3000:3000
+      - 9229:9229
+    depends_on:
+      - db
+      - redis
+    networks:
+      - servernet
+    env_file:
+      - ./server.env
+      - ./database.env
+      - ./development.env
+    command: bash -c "
+      /usr/src/app/home_automation_server/wait-for-it.sh db:5432
+      && /usr/src/app/home_automation_server/wait-for-it.sh redis:6379
+      && sh /usr/src/app/home_automation_server/entrypoint.sh"
+    tty: true
+networks:
+  servernet:
+volumes:
+  nodemodules:
+  #db_data:
+    #external: true

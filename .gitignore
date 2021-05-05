@@ -56,6 +56,8 @@ typings/
 
 # dotenv environment variables file
 .env
+database.env
+server.env
 
 # next.js build output
 .next
@@ -63,5 +65,6 @@ typings/
 # sequelize config
 src/config/configdb.js
 
-# secrets config
-src/config/secrets.js
+# tsl certificate and key
+server.cert
+server.key

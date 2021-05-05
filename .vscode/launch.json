@@ -7,19 +7,23 @@
     {
       "type": "node",
       "request": "attach",
-      "name": "HA-Nodemon",
-      "processId": "${command:PickProcess}",
-      "restart": true,
-      "protocol": "inspector",
-      "trace": true
-    },
-    {
-      "type": "node",
-      "request": "attach",
-      "name": "Nodemon Debug",
+      "name": "Debug: HA dev server",
       "port": 9229,
       "restart": true,
-      "trace": true
+      "trace": true,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/src",
+      "remoteRoot": "/usr/src/app/home_automation_server/src",
+      /*"sourceMapPathOverrides": {  //not necessary
+        "/usr/src/app/src/*": "${workspaceFolder}/home_automation_server/src/*"
+      },*/
+      "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
+        "/usr/src/app/home_automation_server/node_modules/**/*.js",
+        "<node_internals>/**/*.js"
+      ],
+      "protocol": "inspector",
+      "sourceMaps": true
     }
   ]
 }
