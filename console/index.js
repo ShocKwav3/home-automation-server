@@ -5,13 +5,12 @@ import messages from './messages';
 import consoleHelpers from './consoleHelpers';
 
 
-const printResult = (arg) => JSON.parse(JSON.stringify(arg));
-global.printResult = printResult;
+global.printDbQueryResults = consoleHelpers.printDbQueryResults;
 
 messages.sayWelcome();
 
 const replServer = repl.start({
-  prompt: `${messages.user}@App Console → `,
+    prompt: `${messages.user}@App Console → `,
 });
 
 contextInitializers.initializeModels(replServer.context);
@@ -21,5 +20,5 @@ customCommands.defineModelList(replServer);
 customCommands.defineDbConnectionCheck(replServer);
 customCommands.defineInstruction(replServer);
 
-replServer.on("exit", consoleHelpers.onExit);
-replServer.on("reset", contextInitializers.initializeModels);
+replServer.on('exit', consoleHelpers.onExit);
+replServer.on('reset', contextInitializers.initializeModels);

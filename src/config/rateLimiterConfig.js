@@ -1,5 +1,5 @@
 export default {
     keyPrefix: 'rateLimiterKey_',
-    points: 1,
+    points: 10,
     duration: 1,
 };

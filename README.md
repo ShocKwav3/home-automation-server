@@ -34,7 +34,7 @@ There are couple of things needed to be setup before running the server locally.
     - Run using env variables with proper value while running the command
     - `DB_HOST=localhost POSTGRES_DB=home_automation_dev POSTGRES_USER= POSTGRES_PASSWORD= ./node_modules/.bin/babel-node --experimental-repl-await ./console` <- provide appropriate/dev server usage values to `POSTGRES_USER` and `POSTGRES_PASSWORD`
     - Type `.help` to see available command aliases
-    - Run any `sequelize` query. Make sure to wrap the query with `printResult` Eg. `printResult(await user.findAll())`
+    - Run any `sequelize` query. Make sure to wrap the query with `printDbQueryResults` Eg. `printDbQueryResults(await user.findAll())`
     - The aim is have rails like experience to see data. WIP
 
  ## Attributes
